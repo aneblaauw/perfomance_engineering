@@ -1,7 +1,4 @@
 #A datastructure to encode DTMC (discrete-time Markov chanis)
-from fileinput import filename
-import numpy as np
-import random as rm
 
 
 
