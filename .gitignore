@@ -2,3 +2,5 @@
 env/
 # files for reading/writing
 textFiles/**
+
+**/__pycache__/**
