@@ -4,6 +4,7 @@ from typing import NamedTuple
 import re
 import numpy as np
 
+# an example for reading tokens taken from the internett
 class Tokenized(NamedTuple):
     type: str
     string: str
