@@ -102,7 +102,7 @@ class Token:
         return self.column
   
 
-class listOfTokens:
+class tokenize:
     # Task 7 - må bruke Token classen på en måte
     def readFileToTokens(self, file):
         
@@ -114,19 +114,19 @@ class listOfTokens:
             line = line.rstrip()
             newLine = re.sub(r"#.*", r"", line)  # Sletter alle kommentarer
             while newLine!="": # if the new line is different from an empty line
-                if re.match(r"^[ \t]+", newLine):
-                    newLine = re.sub(r"^[ \t]+", "", newLine) # want to match anything but the whitespace and the tabular
-                elif re.match(r"[a-zA-Z_][a-zA-Z0-9_]*", newLine):
+                if re.match(r"^[ \t]+", newLine): # want to match anything but the whitespace and the tabular
+                    newLine = re.sub(r"^[ \t]+", "", newLine) # substitute whitespace and tab by nothing
+                elif re.match(r"[a-zA-Z_][a-zA-Z0-9_]*", newLine): # New line start with an identifier
                     identifier = re.match(r"[a-zA-Z_][a-zA-Z0-9_]*", newLine).group()
-                    newLine = re.sub(r"^[a-zA-Z_][a-zA-Z0-9_]*", "", newLine)
+                    newLine = re.sub(r"^[a-zA-Z_][a-zA-Z0-9_]*", "", newLine) # Remove the identifier from Newline
                     # type = 'identifier'
                     tokens.append(identifier)
-                elif re.match(r'"[^"]*"', newLine):
+                elif re.match(r'"[^"]*"', newLine): # Regular expression for stings 
                     string = re.match(r'"[^"]*"', newLine).group()
                     newLine = re.sub(r'"[^"]*"', "", newLine)
                     tokens.append(string)
                 else:
-                    character = newLine[0]
+                    character = newLine[0] # Pick up the first character of the line
                     newLine = newLine[1:]
                     tokens.append(character)
 
@@ -135,14 +135,10 @@ class listOfTokens:
 # Task 9
 class checkCorrectness:
     # probabilit
-    
+
     def validateMarcovChain(self, dtmc, probability_distribution):
       
 
 
 
-# Task 10
-
-
-
-
+# Task 10 

@@ -1,11 +1,10 @@
-# TEsting markovik Chains
+# Testing Markovik Chains
 # Task 4
 
 # The states
 states = ['CALM', 'MODERATE', 'ROUGH']
 
 # possible sequences of events
-
 transistionName = [['CC', 'CM', 'CR'],  # CALM
                     ['MC', 'MM', 'MR'], # MODERATE
                     ['RC', 'RM', 'RR']] # ROUGH
@@ -27,3 +26,5 @@ p1 = probability_distribution('p1', seaCondition, probabilities)
 test = MarkovChain(seaCondition, p0, p1)
 
 test.print()
+
+
