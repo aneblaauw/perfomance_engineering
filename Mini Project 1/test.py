@@ -2,6 +2,7 @@ from lib2to3.pgen2.tokenize import tokenize
 from operator import index
 from typing import NamedTuple
 import re
+import numpy as np
 
 class Tokenized(NamedTuple):
     type: str
@@ -30,7 +31,7 @@ def tokenizeFile(filename):
     tok_regex = '|'.join('(?P<%s>%s)' % pair for pair in token_specification)
     line_num = 0
     for line in input:
-        print(line)
+        # print(line)
         line_num += 1
         line_start = 0
         for mo in re.finditer(tok_regex, line):
@@ -56,9 +57,47 @@ def tokenizeFile(filename):
 
 #print(tokens)
 
-
+'''
 for token in tokenizeFile("hei.txt"):
     print(token)
+'''
 
 v = tokenizeFile("hei.txt")
-print(v)
+#print(v)
+
+def generateDTMCfromToken(tokens):
+        # generate DTMC and probabilities from a list of token
+        # assuming the tokens are sorted after line and column
+
+        # TODO: add name to tokens
+        name = ''
+        states = []
+        transitionMatrix = []
+        # Probabilities matrix (transition matrix)
+        transitionMatrixEx = [[0.6, 0.4, 0.0], # CALM
+                        [0.6, 0.3, 0.1], # MODERATE
+                        [0.0, 0.9, 0.1]] # ROUGH
+        # The states
+        statesEx = ['CALM', 'MODERATE', 'ROUGH']
+
+        lines = []
+
+
+        for token in tokens:
+            if not token.line_num in lines:
+                lines.append(token.line_num)
+
+            if token.type == 'Identifiers':
+                if not token.string in states:
+                    states.append(token.string)
+        print(states)
+        transitionMatrix = np.zeros((len(states), len(states)))
+
+        for token in tokens:
+            pass
+
+        print(transitionMatrix)
+
+
+
+s = generateDTMCfromToken(v)
