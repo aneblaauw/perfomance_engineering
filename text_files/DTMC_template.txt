@@ -1,0 +1,11 @@
+MarkovChain SeaCondition
+	CALM -> CALM: 0.6;
+	CALM -> MODERATE: 0.4;
+	CALM -> ROUGH: 0.0;
+	MODERATE -> CALM: 0.6;
+	MODERATE -> MODERATE: 0.3;
+	MODERATE -> ROUGH: 0.1;
+	ROUGH -> CALM: 0.0;
+	ROUGH -> MODERATE: 0.9;
+	ROUGH -> ROUGH: 0.1;
+end 
