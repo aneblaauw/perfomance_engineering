@@ -56,7 +56,7 @@ class MarkovChain():
             except ValueError:
                 print('Tokens list must contain an "end" token')
             
-            group = tokens[start_index:end_index +1]
+            group = tokens[start_index:end_index + 1]
             
             # the first token in a new group defines the type of the group
             if group[0].string == 'MarkovChain':
@@ -106,7 +106,46 @@ class MarkovChain():
             M_ = M_ @ M
 
         # TODO: sojourn time ?
-        return M 
+        return M
+
+    # Task 12
+    def timeSeries(self, dtmc, s0, n):
+        """Generates a time series from a DTMC.
+            dtmc (DTMC): a DTMC
+            s0 (string): intial state
+            n (int): number of steps
+        """
+        currentState = s0
+        timeSeries = [currentState]
+        possibleStates = dtmc.states
+        i = 0
+        prob = 1
+        while i < n:
+            for i in range(len(possibleStates)):
+                if currentState == possibleStates[i]:
+                    probabilities = dtmc.transitions[i]
+                    # nextState = np.random.choice(possibleStates)
+                    change = np.random.choice(possibleStates, replace=True, p=probabilities)
+                    if change == possibleStates[0]:
+                       prob = prob * probabilities[0]
+                       timeSeries.append(change)
+                    elif change == possibleStates[1]:
+                        prob = prob * probabilities[1]
+                        timeSeries.append(change)
+                    else:
+                        prob = prob * probabilities[2]
+                        timeSeries.append(change)
+                    currentState = change
+            i += 1
+        print("Possible states: " + str(possibleStates))
+        print("End state after " + str(n) + " steps: " + currentState)
+        print("Probability of the time series: " + str(prob))
+        print("Time series: " + str(timeSeries))
+        
+
+
+
+
 
 
 

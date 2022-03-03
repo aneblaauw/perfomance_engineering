@@ -12,15 +12,15 @@ class Test(unittest.TestCase):
         self.states = ['CALM', 'MODERATE', 'ROUGH']
 
         # possible sequences of events
-        self.transistionName = [['CC', 'CM', 'CR'],  # CALM
-                            ['MC', 'MM', 'MR'], # MODERATE
-                            ['RC', 'RM', 'RR']] # ROUGH
+        self.transistionName = [['CC', 'CM', 'CR'], # CALM
+                               ['MC', 'MM', 'MR'],  # MODERATE
+                               ['RC', 'RM', 'RR']]  # ROUGH
 
                 
         # Probabilities matrix (transition matrix)
         self.transitionMatrix = [[0.6, 0.4, 0.0], # CALM
-                            [0.6, 0.3, 0.1], # MODERATE
-                            [0.0, 0.9, 0.1]] # ROUGH
+                                [0.6, 0.3, 0.1],  # MODERATE
+                                [0.0, 0.9, 0.1]]  # ROUGH
 
         self.probabilities = [1.0, 0.0, 0.0] # one probability for each state
 
@@ -79,6 +79,10 @@ class Test(unittest.TestCase):
     
 
     # TODO: test task 10 and 11
+
+    def testTimeseries(self):
+        self.mc.timeSeries(self.dtmc, 'CALM', 5)
+
 
     
 

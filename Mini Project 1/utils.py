@@ -20,7 +20,7 @@ def tokenizeFile(filename):
         ('NEWLINE',     r'[\n]+'),        # Line endings
         ('SKIP',        r'[ \t]+'),       # Skip over spaces and tabs
         ('MISMATCH',    r'.'),            # Any other character
-        
+
     ]
     tok_regex = '|'.join('(?P<%s>%s)' % pair for pair in token_specification)
     line_num = 0
@@ -46,6 +46,8 @@ def tokenizeFile(filename):
                 print("error")
             
             tokens.append(Token(type, string, line_num, column))
+    
+    input.close()
     
     return tokens
 
@@ -161,7 +163,6 @@ def generateProbDistFromTokens(markov_chain, tokens):
                 # can find the index for the probability
                 try:
                     index = DTMC.states.index(token.string)
-
                 except:
                     raise IndexError(f"The DTMC %s doesn't have the state %s", DTMC, token.string)
             
