@@ -46,8 +46,6 @@ class Test(unittest.TestCase):
         # self.assertRaises(ProbabilityDistribution('Test', self.dtmc, [2.3]), AssertionError)
         pass
 
-        
-    
     def test_create_ProbabilityDistribution(self):        
         self.assertEqual(self.p0.name, 'p0')
     
@@ -59,7 +57,6 @@ class Test(unittest.TestCase):
         f  = self.mc.write_to_file('test.txt')
         self.assertEqual(f.name, 'text_files/test.txt')
 
-    
     def test_parse_tokens(self):
         mc2 = MarkovChain()
         mc2.parse_tokens(tokens=self.tokens)
@@ -77,16 +74,25 @@ class Test(unittest.TestCase):
     def test_generate_next_name(self):
         self.assertEqual(generate_next_name('p0'), 'p1')
     
-
-    # TODO: test task 10 and 11
-
-    def testTimeseries(self):
-        self.mc.timeSeries(self.dtmc, 'CALM', 5)
-
-
+    def test_Timeseries(self):
+        timeseries = self.mc.timeSeries(self.dtmc, 'CALM', 5)
+        print(timeseries)
     
-
-
+    def test_DTMC_from_Timeseries(self):
+        timeseries = self.mc.timeSeries(self.dtmc, 'CALM', 40)
+        success, dtmc = self.mc.createDTMCfromTimeSeries(timeseries, self.states)
+        print(success)
+        while not success:
+            timeseries = self.mc.timeSeries(self.dtmc, 'CALM', 40)
+            success, dtmc = self.mc.createDTMCfromTimeSeries(timeseries, self.states)
+        
+        print(dtmc)
+        print('States: ', dtmc.states)
+        print('TransitionsMatrix: ', dtmc.transitions)
+    
+    def test_length_Timeseries(self):
+        self.mc.timeSeriesToDTMC(self.dtmc)
+    
 
 if __name__ == '__main__':
     unittest.main()

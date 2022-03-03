@@ -11,13 +11,17 @@ class DTMC(object):
         assert len(transitions) == len(states) 
         for trans in transitions:
             assert len(trans) == len(states), f'The length of the transition %s must be of size %s ' % (trans, len(states))
-            assert sum(trans) <= 1.0, f'The sum of the transition %s is greater than 1' % trans
+            assert round(sum(trans)) <= 1.0, f'The sum of the transition %s is greater than 1, sum: %s' % (trans, sum(trans))
         self.name = name
         self.states = states
         self.transitions =  transitions
 
     def __str__(self):
         return f'DTMC(name=%s)' % self.name
+    
+    def printTransitions(self):
+        for transition in self.transitions:
+            print(transition)
     
 
 # Task 2

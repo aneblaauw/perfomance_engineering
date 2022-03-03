@@ -3,7 +3,8 @@ import re
 import numpy as np
 
 
-# Task 7
+"""Task 7. Function that reads a file and returns the list of tokens this file consists
+in."""
 def tokenizeFile(filename):
 
     tokens = []
@@ -51,7 +52,7 @@ def tokenizeFile(filename):
     
     return tokens
 
-# Task 8
+# Task 8. Parse DTMC from a list of tokens.
 def generateDTMCfromTokens(tokens):
         # generate DTMC and probabilities from a list of token
         # assuming the tokens are sorted after line and column
@@ -190,3 +191,14 @@ def generate_next_name(name):
 
     new_number = int(number) + 1
     return name + str(new_number)
+
+def nextState(timeseries, dtmc):
+    currentState = timeseries[-1]
+    possibleStates = dtmc.states
+    state_index = possibleStates.index(currentState)
+    probabilities = dtmc.transitions[state_index]
+    # nextState = np.random.choice(possibleStates)
+    change = np.random.choice(possibleStates, replace=True, p=probabilities)
+    timeseries.append(change)
+        
+    return timeseries
