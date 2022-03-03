@@ -1,11 +1,13 @@
+# Help functions that helps managing DTMCs.
+
 from models import Token, DTMC, ProbabilityDistribution
 import re
 import numpy as np
 
 
-"""Task 7. Function that reads a file and returns the list of tokens this file consists
-in."""
 def tokenizeFile(filename):
+    """Task 7. Function that reads a file and returns the list of tokens this file 
+    consists in."""
 
     tokens = []
     sourceName = filename 
@@ -13,6 +15,7 @@ def tokenizeFile(filename):
 
     keywords = ['False', 'None', 'True', 'and', 'as', 'assert', 'async', 'elif', 'await',
     'break', 'class', 'continue', 'of']
+
     token_specification = [
         ('Number',      r'\d+(\.\d*)?'),  # Integer or decimal number
         ('Delimiters',  r'[;:]'),         # Statement terminator
@@ -21,10 +24,11 @@ def tokenizeFile(filename):
         ('NEWLINE',     r'[\n]+'),        # Line endings
         ('SKIP',        r'[ \t]+'),       # Skip over spaces and tabs
         ('MISMATCH',    r'.'),            # Any other character
-
     ]
+
     tok_regex = '|'.join('(?P<%s>%s)' % pair for pair in token_specification)
     line_num = 0
+
     for line in input:
         line_num += 1
         line_start = 0
@@ -45,29 +49,29 @@ def tokenizeFile(filename):
                 continue
             elif type == 'MISMATCH':
                 print("error")
-            
             tokens.append(Token(type, string, line_num, column))
     
     input.close()
     
     return tokens
 
-# Task 8. Parse DTMC from a list of tokens.
-def generateDTMCfromTokens(tokens):
-        # generate DTMC and probabilities from a list of token
-        # assuming the tokens are sorted after line and column
-      
-        transitionMatrix = []
-        transition = False
-        transitions = {}
-        states = []
-        name = None
-        state_f = None # the start state in a transition
-        state_t = None # the end state in a transition
-        transition_val = None # the transition value for the current transition
 
-        for token in tokens:
-            '''
+def generateDTMCfromTokens(tokens):
+    """Task 8. Parse DTMC from a list of tokens."""
+    # generate DTMC and probabilities from a list of token
+    # assuming the tokens are sorted after line and column
+      
+    transitionMatrix = []
+    transition = False
+    transitions = {}
+    states = []
+    name = None
+    state_f = None # the start state in a transition
+    state_t = None # the end state in a transition
+    transition_val = None # the transition value for the current transition
+
+    for token in tokens:
+        '''
             What we know:
             * the column number depends on the length of the words before, ex
                     CALM -> ROUGH: 0.0;
@@ -80,53 +84,47 @@ def generateDTMCfromTokens(tokens):
             * Every object from the tokens ends with an 'end' token
             * Every line ends with an ;
             * The name is the first token in every group of tokens sent in
+        '''
+        if name == None:
+            # current token is the name
+            name = token.string
+    
+        elif token.column == 1:
+            transition = True
+            # now we know that we are dealing with a transition 
+            state_f = token.string
+            if not state_f in states:
+                states.append(token.string)
 
-            '''
-            if name == None:
-                # we now the current token is the name
-                name = token.string
-            
-
-            elif token.column == 1:
-                transition = True
-                # now we know that we are dealing with a transition 
-                state_f = token.string
-                if not state_f in states:
+        elif transition:
+            if token.type == 'Identifiers':
+                state_t = token.string # the end state in the transition
+                if not state_t in states:
                     states.append(token.string)
-
-            elif transition:
-                if token.type == 'Identifiers':
-                    state_t = token.string # the end state in the transition
-                    if not state_t in states:
-                        states.append(token.string)
-                if token.type == 'Number':
-                    transition_val = token.string
-                if token.string == ';':
-                    # end of the transition
-                    transition = False
-                    transitions[(state_f, state_t)] = transition_val
+            if token.type == 'Number':
+                transition_val = token.string
+            if token.string == ';':
+                # end of the transition
+                transition = False
+                transitions[(state_f, state_t)] = transition_val
                 
-            elif token.string == 'end':
-                # finished with the markov Chain, ready to make the DTMC
-                # We have the name and the states, need to make the transition matrix
-                transitionMatrix = np.zeros((len(states), len(states)))
-
-                for key, value in transitions.items():
-                    # the index in the transistion matrix can be found by the key tuple
-                    state_from = key[0]
-                    state_to = key[1]
-                    # finding the indexes in the transition matrix
-                    i = states.index(state_from)
-                    j = states.index(state_to)
-                    transitionMatrix[i][j] = value
-                return DTMC(name=name, states=states, transitions=transitionMatrix)
+        elif token.string == 'end':
+            # finished with the markov Chain, ready to make the DTMC
+            # We have the name and the states, need to make the transition matrix
+            transitionMatrix = np.zeros((len(states), len(states)))
+            for key, value in transitions.items():
+                # the index in the transistion matrix can be found by the key tuple
+                state_from = key[0]
+                state_to = key[1]
+                # finding the indexes in the transition matrix
+                i = states.index(state_from)
+                j = states.index(state_to)
+                transitionMatrix[i][j] = value
+            return DTMC(name=name, states=states, transitions=transitionMatrix)
                     
 
-
-# Task 8
 def generateProbDistFromTokens(markov_chain, tokens):
-    '''
-    Need the MarkovChain to find the belonging DTMC
+    ''' Task 8. Need the MarkovChain to find the belonging DTMC
     probabilities = [1.0, 0.0, 0.0] # one probability for each state
     '''
     # a probability distribution has a name (p0), and a belongning DTMC (identified from name)
@@ -140,6 +138,7 @@ def generateProbDistFromTokens(markov_chain, tokens):
     probability_list = []
     DTMC = None
     index = None # index for the probability
+
     for token in tokens:
         if not probability and token.string != 'end':
             if name == None:
@@ -173,6 +172,7 @@ def generateProbDistFromTokens(markov_chain, tokens):
             if token.string == ';':
                 # probability is finished 
                 probability = False
+
         if token.string == 'end':
             # the tokens are finished, ready to make the probability distribution
             return ProbabilityDistribution(name=name, DTMC=DTMC, probabilities=probability_list)
@@ -188,7 +188,6 @@ def generate_next_name(name):
         else:
             name = name + char
 
-
     new_number = int(number) + 1
     return name + str(new_number)
 
@@ -197,7 +196,6 @@ def nextState(timeseries, dtmc):
     possibleStates = dtmc.states
     state_index = possibleStates.index(currentState)
     probabilities = dtmc.transitions[state_index]
-    # nextState = np.random.choice(possibleStates)
     change = np.random.choice(possibleStates, replace=True, p=probabilities)
     timeseries.append(change)
         
