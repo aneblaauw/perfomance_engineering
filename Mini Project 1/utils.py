@@ -1,4 +1,4 @@
-# Help functions for general use and to manage DTMCs.
+# Help functions for general use and to manage DTMCs and probability distributions.
 
 
 from models import Token, DTMC, ProbabilityDistribution
