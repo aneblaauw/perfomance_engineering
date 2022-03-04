@@ -1,9 +1,5 @@
-# MarkovChain class
+# MarkovChain class - manager for DTMCs and probability distributions.
 
-# Has functions to do:
-# reading and writing DTMC and probability distributions,
-# calculations regarding DTMC,
-# build a DTMC from a time series and vice-versa.
 
 from models import DTMC, ProbabilityDistribution
 import numpy as np
@@ -175,7 +171,7 @@ class MarkovChain():
   
     def timeSeriesToDTMC(self, dtmc, error=0.1, min_step=40, max_step=50000):
         """Task 14. Generates a timeseries from a dtmc, and finds the needed number of steps in order to 
-            get a DTMC created from the timeseries close to the original
+            get a DTMC created from the timeseries close to the original. 
 
         Args:
             dtmc (DTMC): The DTMC for validation
@@ -210,10 +206,11 @@ class MarkovChain():
             n += 1
         success = np.allclose(dtmc.transitions, dtmc_new.transitions, error)
         print('number of iterations: ', n)
-        print('Alike: ', np.allclose(dtmc.transitions, dtmc_new.transitions, error) )
-        
-        print('Original transitionMatrix: \n', dtmc.printTransitions())
-        print('New transitionMatrix: \n', dtmc_new.printTransitions())
+        print('Alike: ', np.allclose(dtmc.transitions, dtmc_new.transitions, error))
+        print('Original transitionMatrix:')
+        dtmc.printTransitions()
+        print('\nNew transitionMatrix:')
+        dtmc_new.printTransitions()
         return success, n, dtmc_new
 
 

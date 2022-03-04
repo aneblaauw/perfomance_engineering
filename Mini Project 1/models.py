@@ -1,4 +1,5 @@
-#  Contains the models of the program.
+#  The objects of the program.
+
 
 import re
 import numpy as np
@@ -7,7 +8,8 @@ from typing import NamedTuple
 class DTMC(object):
     """Task 1. Datastructure to encode a DTMC from a .txt file."""
     def __init__(self, name, states, transitions):
-        """Task 9. Checking that input is correct."""
+        """Task 9. Checking that input is correct.
+        """
         assert len(transitions) == len(states) 
         for trans in transitions:
             assert len(trans) == len(states), f'The length of the transition %s must be of size %s ' % (trans, len(states))
