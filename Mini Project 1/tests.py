@@ -1,14 +1,20 @@
+# Testing Markovik Chains.
+
+# Here is the tests we used while working with the assignment.
+# Some tests were mandatory, but we decided to make others to test,
+# as we had an top-down approach to this assignment, making sure the earlier finished tasks
+# still worked correctly, when completing the future tasks.
+
 import unittest
 from models import ProbabilityDistribution, DTMC
 from markov_chain import MarkovChain
 from utils import tokenizeFile, generate_next_name
 import numpy as np
 
-# Testing Markovik Chains
-# Task 4
 class Test(unittest.TestCase):
+    """Task 4. Prepared benchmark of DTMC and probability distributions."""
     def setUp(self):
-        # The states
+        # the states
         self.states = ['CALM', 'MODERATE', 'ROUGH']
 
         # possible sequences of events
@@ -36,13 +42,11 @@ class Test(unittest.TestCase):
     
     def test_validation_DTMC(self):
         '''
-        TODO: fix for assertion in __init__
         self.assertRaises(DTMC('Test', states=['we', 'we', 'we'], transitions=[[1, 2, 3], [0, 0, 0], [1]]), AssertionError)
         self.assertRaises(DTMC('Test', states=['we', 'we', 'we'], transitions=[[1, 0, 0], [0, 0, 0], [1]]), AssertionError)
         '''
     
     def test_validation_ProbabilityDistribution(self):
-        # TODO fix
         # self.assertRaises(ProbabilityDistribution('Test', self.dtmc, [2.3]), AssertionError)
         pass
 
@@ -61,12 +65,12 @@ class Test(unittest.TestCase):
         mc2 = MarkovChain()
         mc2.parse_tokens(tokens=self.tokens)
 
-        # checking the dtmc created from the tokens
+        # checking the DTMC created from the tokens
         self.assertEqual(self.mc.DTMC_list[0].name, 'SeaCondition')
         self.assertListEqual(mc2.DTMC_list[0].states, self.dtmc.states)
         np.testing.assert_array_equal(mc2.DTMC_list[0].transitions, self.dtmc.transitions)
 
-        # checking the ProbabilityDistribution
+        # checking the probability distribution
         self.assertEqual(self.mc.probability_distributions[0].name, self.p0.name)
         self.assertEqual(self.mc.probability_distributions[0].DTMC, self.p0.DTMC)
         self.assertEqual(self.mc.probability_distributions[0].probabilities, self.p0.probabilities)

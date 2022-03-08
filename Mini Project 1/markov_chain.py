@@ -1,11 +1,13 @@
+# MarkovChain class - manager for DTMCs and probability distributions.
+
 
 from models import DTMC, ProbabilityDistribution
 import numpy as np
 from utils import generateDTMCfromTokens, generateProbDistFromTokens, generate_next_name, nextState
 
-# Task 3
+
 class MarkovChain():
-    # assuming you want to manage one DTMC with an unknown number of probability distributions
+    """Task 3. Data structure to manage one DTMC with an unknown number of probability distributions"""
     def __init__(self, DTMC=[], probability_distributions=[]):
         self.DTMC_list = DTMC
         self.probability_distributions = probability_distributions
@@ -15,16 +17,24 @@ class MarkovChain():
         probability_dist_str = [pd.name for pd in self.probability_distributions]
         return f'MarkovChain(DTMCs=%s, ProbabilityDistributions=%s)' % (DTMC_str, probability_dist_str)
 
-    # Task 5
+ 
     def write_to_file(self, filename):
+        """Task 5. Function that prints a list of DTMC and a list of probability
+        distributions into a file.
+
+        Args:
+            filename (file.txt): filename that is being written into
+
+        Returns:
+            (file.txt): written file
+        """
         path = 'text_files/'
         f = open(path + filename, 'w')
-        # first write the DTMCs
+        # writing the DTMCs
         for DTMC in self.DTMC_list:
         
             f.write('MarkovChain ' + DTMC.name+ "\n") 
             # writing the states
-            # TODO: update for list of DTMCs
             for i in range(len(DTMC.states)):
                 for j in range(len(DTMC.states)):
                     f.write("\t" + DTMC.states[i] + " -> " + DTMC.states[j]+": " + str(DTMC.transitions[i][j]) + ";\n")
@@ -41,13 +51,10 @@ class MarkovChain():
 
         return f
 
-    # Task 8
-    # This task uses help functions found in utils.py
+   
     def parse_tokens(self, tokens):
-        '''
-        parses a list of tokens to DTMCs or Probability Distributions
-
-        '''
+        '''Task 8. Parses a list of tokens to DTMCs or probability distributions.
+           Uses help functions found in utils.py.'''
         start_index = 0
         end_index = 0
         while start_index < len(tokens):
@@ -71,23 +78,21 @@ class MarkovChain():
             start_index = end_index + 1
     
     
-    # Assuming the task is to calculate the next step
     def computeNextStep(self, pi, dtmc):
         '''Task 10. Implement a function that calculates the product of a probability distribution by the
-        sparse matrix.
+        sparse matrix (calculates the next step).
         
         Args:
-           dtmc: the DTMC
-           pi: the probability at a given step
+           pi (int): the probability at a given step
+           dtmc (DTMC): the DTMC
         '''
-        M = dtmc.transitions #numpy array?
+        M = dtmc.transitions
         p = pi @ M
 
         new_name = generate_next_name(pi.name)
 
-        p_new = ProbabilityDistribution(new_name, dtmc, p) 
-        # TODO: name is dependent on the previos step, ex. pi = p1 -> p_new = p2
-
+        p_new = ProbabilityDistribution(new_name, dtmc, p) # name is dependent on the previos step, ex. pi = p1 -> p_new = p2
+        
         self.probability_distributions.append(p_new)
     
     def sojournTimes(dtmc, p0, n):
@@ -96,17 +101,16 @@ class MarkovChain():
         mission of n steps.
         
         Args: 
-            DTMC: the DTMC
-            p0: the initial probability
-            n: number of steps
+            DTMC (DTMC): the DTMC
+            p0 (int): the initial probability
+            n (int): number of steps
         '''
-        # the probaiblity at step k, given M and p0 is 
+        # the probaiblity at step i, given M and p0 is...
         M = DTMC.transitionMatrix
         M_ = p0 @ M
         for i in range(n):
             M_ = M_ @ M
 
-        # TODO: sojourn time ?
         return M
 
     def timeSeries(self, dtmc, s0, n):
@@ -167,7 +171,7 @@ class MarkovChain():
   
     def timeSeriesToDTMC(self, dtmc, error=0.1, min_step=40, max_step=50000):
         """Task 14. Generates a timeseries from a dtmc, and finds the needed number of steps in order to 
-            get a DTMC created from the timeseries close to the original
+            get a DTMC created from the timeseries close to the original. 
 
         Args:
             dtmc (DTMC): The DTMC for validation
@@ -182,7 +186,7 @@ class MarkovChain():
         assert min_step > 0 , f'min_step can not be smaller than 0'
         assert max_step > min_step, f'max_step must be bigger than min_step'
 
-        # first generate a timeseries from the dtmc, the smallest number of steps is three
+        # first generate a timeseries from the DTMC, the smallest number of steps is 40
         timeseries = self.timeSeries(dtmc, dtmc.states[0], min_step)
         success, dtmc_new = self.createDTMCfromTimeSeries(timeseries, dtmc.states, name='Generated from timeseries')
         while not success:
@@ -190,6 +194,7 @@ class MarkovChain():
             success, dtmc_new = self.createDTMCfromTimeSeries(timeseries, dtmc.states, name='Generated from timeseries')
 
         n = min_step
+        # np.allclose returns True if two arrays are element-wise equal within a tolerance
         while not np.allclose(dtmc.transitions, dtmc_new.transitions, error) and n < max_step: 
             timeseries = nextState(timeseries, dtmc)
             success, dtmc_new = self.createDTMCfromTimeSeries(timeseries, dtmc.states, name='Generated from timeseries')
@@ -201,10 +206,11 @@ class MarkovChain():
             n += 1
         success = np.allclose(dtmc.transitions, dtmc_new.transitions, error)
         print('number of iterations: ', n)
-        print('Alike: ', np.allclose(dtmc.transitions, dtmc_new.transitions, error) )
-        
-        print('Original transitionMatrix: \n', dtmc.printTransitions())
-        print('New transitionMatrix: \n', dtmc_new.printTransitions())
+        print('Alike: ', np.allclose(dtmc.transitions, dtmc_new.transitions, error))
+        print('Original transitionMatrix:')
+        dtmc.printTransitions()
+        print('\nNew transitionMatrix:')
+        dtmc_new.printTransitions()
         return success, n, dtmc_new
 
 

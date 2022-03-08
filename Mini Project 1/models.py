@@ -1,13 +1,15 @@
-#A datastructure to encode DTMC (discrete-time Markov chanis)
+#  The objects of the program.
+
+
 import re
 import numpy as np
 from typing import NamedTuple
 
-# Task 1
-# a class for encoding a DTMC from a .txt file
 class DTMC(object):
+    """Task 1. Datastructure to encode a DTMC from a .txt file."""
     def __init__(self, name, states, transitions):
-        # Task 9, checking input
+        """Task 9. Checking that input is correct.
+        """
         assert len(transitions) == len(states) 
         for trans in transitions:
             assert len(trans) == len(states), f'The length of the transition %s must be of size %s ' % (trans, len(states))
@@ -24,10 +26,10 @@ class DTMC(object):
             print(transition)
     
 
-# Task 2
 class ProbabilityDistribution(object):
+    """Task 2. Datastructure to encode probability distributions."""
     def __init__(self, name, DTMC, probabilities):
-        # Task 9
+        """Task 9. Checking that the size of the probabilities is the same as the number of states in a DTMC."""
         assert len(probabilities) == len(DTMC.states), f'The size of the probabilities %s must be the same as the number of states in %s' % (probabilities, DTMC.states)
         self.name = name
         self.DTMC = DTMC
@@ -37,8 +39,8 @@ class ProbabilityDistribution(object):
         return f'ProbabilityDistribution(name=%s, DTMC=%s, probabilities=%s)' % (self.name, self.DTMC.name, self.probabilities)
     
 
-# Task 6
 class Token(NamedTuple):
+    """Task 6. Data structure to encode tokens."""
     type: str
     string: str
     line_num: int
