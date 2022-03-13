@@ -1,7 +1,6 @@
 # helping functions to manage the different objects
 
 import os
-from openpyxl import load_workbook
 import pandas as pd
 
 from datetime import datetime
