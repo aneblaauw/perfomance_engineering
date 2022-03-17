@@ -47,6 +47,15 @@ def stringToDateTime(string):
 
     return datetime_object
 
+def dateToString(datetime_object):
+    """Helping function to convert a date to string-format."""
+
+    if str(datetime_object) == str('NaT'):
+        return ''
+    string = datetime_object.strftime('%Y-%m-%d %H:%M:%S')
+    return string
+
+
 def calculateTimeDifference(startDate, endDate):
     """Task 3. Calculates the difference between two dates in hours.
 

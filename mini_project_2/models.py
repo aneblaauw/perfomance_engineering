@@ -8,12 +8,13 @@ from importlib.resources import path
 from re import U
 from matplotlib import units
 import matplotlib.pyplot as plt
-from utils import readFile
+from utils import readFile, dateToString
 import numpy as np
 import pandas as pd
-import lifelines # vet ikke om vi trenger, er for plotting
+#import lifelines # vet ikke om vi trenger, er for plotting
 import xlsxwriter
-import xlwt
+#import xlwt
+#from xlwt import Workbook
 
 class DataBase:
     """
@@ -63,52 +64,40 @@ class DataBase:
         for i, row in df.iterrows():
             unit = Unit(row['Code'], row['Description'], row['In-Service Date'], row['Out-Service Date'], row['Failure Date'])
             key = unit.code[0:3]
-            if key == 'TPS':
-                self.units[0].append(unit)
-            elif key == 'PRS':
-                self.units[1].append(unit)
-            elif key == 'VBS':
-                self.units[2].append(unit)
-            elif key == 'AQM':
-                self.units[3].append(unit)
-            elif key == 'LGS':
-                self.units[4].append(unit)
-            elif key == 'SLV':
-                self.units[5].append(unit)
-            elif key == 'SDV':
-                self.units[6].append(unit)
-            elif key == 'MP1':
-                self.units[7].append(unit)
-            elif key == 'MP2':
-                self.units[8].append(unit)
-            else:
-                self.units[9].append(unit)
-
-        # we know the order of the values in the excel file
+            self.units[key].append(unit)
 
         
-    def printUnits(self):
+    def printUnits(self, filename='Test.xlsx'):
         """Task 5. Prints a dictionary of units to an excel.
+            filename (string): the name (and path)  for the file. Must en with .xlsx
         """
 
-        df = pd.DataFrame.from_dict(self.units, orient='index', columns=['Code','Description','In-Service Date','Out-Service Date', 'Failure Date'])
-        df.to_excel('pandas_to_excel.xlsx', sheet_name='new_sheet_name')
-
-        workbook = xlsxwriter.Workbook('new_excelsheet.xlsx')
+        # Create a workbook and add a worksheet.
+        workbook = xlsxwriter.Workbook('Test.xlsx')
         worksheet = workbook.add_worksheet()
+
+        # holde styr på hvilken cellenr de forskjellige kategoriene har
+        worksheet.write(0, 0, 'Code')
+        worksheet.write(0, 1, 'Description')
+        worksheet.write(0, 2, 'In-Service Date')
+        worksheet.write(0, 3, 'Out-Service Date')
+        worksheet.write(0, 4, 'Failure Date')
         
-        # Starts from the first cell -> Row, column (0,0)
-        row = 0
-        col = 0
-        """Så lenge det er elementer i units.
-        """
-        while len(self.units) > 0:
-            # Skrive først row_0 med alle keys navn
-            # Også iterere nedover, legge inn values
-            for key, value in self.units:
-                worksheet.write(row, col, element)
-                worksheet.write(row, col)
-        
+        # loope gjennom units. 
+        row = 1 # counts what row we are writing on
+        for units in self.units.values():
+            for unit in units:
+                # write to excel 
+                # the column for the different attributes must match the header created abowe
+                #TODO: create smarter method for handling attribute and columns?
+                worksheet.write(row, 0, unit.code)
+                worksheet.write(row, 1, unit.description)
+                worksheet.write(row, 2, dateToString(unit.in_service_date))
+                worksheet.write(row, 3, dateToString(unit.out_service_date))
+                worksheet.write(row, 4, dateToString(unit.failure_date))
+                row += 1
+        workbook.close()
+
 
 class Unit:
     def __init__(self, code, description, in_service_date, out_service_date, failure_date):
@@ -146,8 +135,24 @@ class Calculator:
     # Task 8. Methods to draw out Kaplan-Meier estimator from a data base. 
     
 class ReportGenerator:
-    """Task 9. Class to generate semi-automatically the HTML pages from the data base"""
+    """Task 9. Class to generate semi-automatically the HTML pages from the data base'
+    Ikke testet, og usikker om det er dette de spør om.
+    """
     def __init__(self):
-        database = self.Database()
         pass
+    
+    def convert_to_HTML(self):
+        # iterate dict -> iterate values
+        # add the "<td>" tag after each value & <tr> after each key into a string
+        # <tabel> tags at the start and end
+        # save the string into a file html
+        data = ""
+        for units in self.units:
+            data += "<td>" + units + "</td>"
+            for unit in units[units]:
+                data += "<td>" + unit + "</td>"
+            data += "<tr>"
+        
+        with open("html_file.html", "w") as file:
+            file.write(data)
 
