@@ -8,11 +8,14 @@ from importlib.resources import path
 from re import U
 from matplotlib import units
 import matplotlib.pyplot as plt
+from kaplan_meier import Calculator
+from utils import listFiles
 from utils import readFile, dateToString
 import numpy as np
 import pandas as pd
 #import lifelines # vet ikke om vi trenger, er for plotting
 import xlsxwriter
+import os
 #import xlwt
 #from xlwt import Workbook
 
@@ -44,6 +47,10 @@ class DataBase:
     MOTOR_PUMP3 = 'MP3'
     
     def __init__(self):
+        """initialises the database. Units is set as an dictionary with keys being every component of different units. 
+        Every component has a list with units of that type, this list is set to empty for now.
+        """
+
         self.units = {self.TEMPERATURE_SENSOR :[],
                     self.PRESSURE_SENSOR: [],
                     self.VIBRATION_SENSOR: [],
@@ -55,10 +62,22 @@ class DataBase:
                     self.MOTOR_PUMP2: [],
                     self.MOTOR_PUMP3: []
                     }
+    
+    def createDataBase(self, dir_path=os.path.dirname(os.path.realpath(__file__)), foldername="/ReliabilityData"):
+        """Creates a database from a folder with many (or one) worksheet. Uses the addUnits() method
+        """
+        files = listFiles(dir_path + foldername)
+        for file in files:
+            # file = the filename
+            self.addUnits(dir_path + foldername+'/'+ file)
+    
 
     def addUnits(self, file):
-        """
-        Reads from an excel file and creates units and adds to the dictionary with units
+        """Reads from an excel file and creates a unit from every row in the  file. 
+        The unit will be added to the databases units dictionary according to the component,
+
+        Args:
+            file (str): The name of the file to be read
         """
         df = readFile(file)
         for i, row in df.iterrows():
@@ -66,14 +85,17 @@ class DataBase:
             key = unit.code[0:3]
             self.units[key].append(unit)
 
-        
+
     def printUnits(self, filename='Test.xlsx'):
-        """Task 5. Prints a dictionary of units to an excel.
-            filename (string): the name (and path)  for the file. Must en with .xlsx
+        """Task 5. Prints a dictionary of units to an excel file.
+
+        Args:
+            filename (str, optional): the name (and path)  for the file. Must end with .xlsx. Defaults to 'Test.xlsx'.
         """
+        
 
         # Create a workbook and add a worksheet.
-        workbook = xlsxwriter.Workbook('Test.xlsx')
+        workbook = xlsxwriter.Workbook(filename)
         worksheet = workbook.add_worksheet()
 
         # holde styr på hvilken cellenr de forskjellige kategoriene har
@@ -108,28 +130,7 @@ class Unit:
         self.failure_date = failure_date
         
         
-class KaplanMeierEstimator:
-    """Task 6. 
-    Kaplan-Meier estimator : a non-parametric statistic,
-    estimates the survival function of time-to-event data.
-    """
-    def __init__(self, t_i, ):
-        t_i = None # a duration time
-        d_i = None # number of events that happened at time t_i
-        n_i = None # number of individuals known to have survived up to time t_i
-        pass
-    
-    def survivalFunction():
-        """
-        sum i from t_i < t : 1 - d_i/n_i
-        """
-        pass
 
-
-class Calculator:
-    """Task 7. Class with management methods to extract Kaplan-Meier estimator from a data base"""
-    def __init__(self) -> None:
-        pass
 
     
     # Task 8. Methods to draw out Kaplan-Meier estimator from a data base. 
@@ -138,21 +139,50 @@ class ReportGenerator:
     """Task 9. Class to generate semi-automatically the HTML pages from the data base'
     Ikke testet, og usikker om det er dette de spør om.
     """
-    def __init__(self):
-        pass
+    def __init__(self, database, name='plants'):
+        self.database = database
+        self.name = name
     
-    def convert_to_HTML(self):
+    def convert_to_HTML(self, filename='report', dir_path=os.path.dirname(os.path.realpath(__file__)) + '/reports/'):
         # iterate dict -> iterate values
         # add the "<td>" tag after each value & <tr> after each key into a string
         # <tabel> tags at the start and end
         # save the string into a file html
-        data = ""
-        for units in self.units:
-            data += "<td>" + units + "</td>"
-            for unit in units[units]:
-                data += "<td>" + unit + "</td>"
-            data += "<tr>"
+
+        # TODO: fix format html
+        # TODO: fix """" mistake
+        # TODO: generate real name for each component, not only code
+        data = """<html>
+        <head></head>
+        <style>
+        h1 {text-align: center;}
+        p {text-align: center;}
+        div {text-align: center;}
+        img {text-align: center;}
+        .center {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            width: 50%;
+            }
+        </style>
+        <body><h1>
+                <p>Survival Analysis of + """ + self.name+"""</p>
+            </h1>
+        """
+
+        for component, units in self.database.units.items():
+            data += """\n  <h2><p>Kaplan-Meier estimate: """ + component + """</p></h2>"""
+            # generate the estimator and draw it out
+            calculator = Calculator(self.database, component)
+            survival = calculator.kme.survivalFunction()
+            png_path = calculator.exportKMEtofile()
+            data += "</br> <img src="+png_path + "class='center'>"
+
         
-        with open("html_file.html", "w") as file:
+        data += """\n </body> </html>"""
+        
+        with open(dir_path + filename + ".html", "w") as file:
             file.write(data)
+            file.close()
 

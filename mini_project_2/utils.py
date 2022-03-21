@@ -70,3 +70,36 @@ def calculateTimeDifference(startDate, endDate):
     duration_in_s = difference.total_seconds() 
     hours = divmod(duration_in_s, 3600)[0] 
     return hours
+
+def calculateSurvivalTimes(units):
+
+    durations = []
+    for unit in units:
+        # TODO: check if the unit has a failure date
+        # We know that every unit has a in_service_date and either a failure_date or an out_service_date
+        if str(unit.out_service_date) == 'NaT':
+            # must use failure_date
+            end_date = unit.failure_date
+        else:
+            end_date = unit.out_service_date
+            # TODO: is this correct?
+            # Should we use the out_service_date in the same way we use failure date?
+        survival_time = calculateTimeDifference(unit.in_service_date, end_date)
+        durations.append(survival_time)
+        durations.sort()
+        #survival_time = calculateTimeDifference(unit.in_service_date, unit.out_service_date)
+
+    return durations
+
+def preparePlotValues(calculator):
+
+        sorted_durations = calculator.kme.durations
+        survival_points = calculator.kme.survivalFunction()
+
+        #unique_durations
+        x = sorted(list(set(sorted_durations)))
+
+        y = []
+        for tup in survival_points:
+            y.append(tup[1]/len(sorted_durations))
+        return x, y

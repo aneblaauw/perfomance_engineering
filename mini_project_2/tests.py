@@ -1,23 +1,27 @@
 import string
 import unittest
 import os
-from utils import listFiles, readFile, stringToDateTime, calculateTimeDifference, dateToString
-from models import DataBase
+from kaplan_meier import KaplanMeierEstimator, Calculator
+from utils import listFiles, readFile, stringToDateTime, calculateTimeDifference, dateToString, calculateSurvivalTimes
+from models import DataBase, ReportGenerator
 
 class Test(unittest.TestCase):
     def setUp(self):
-        pass
+        self.dataBase = DataBase()
+        self.dataBase.createDataBase(foldername='/TestFiles')
 
     def test_listFiles(self):
         dir_path = os.path.dirname(os.path.realpath(__file__))
-        files = listFiles(dir_path + "/ReliabilityData")
-        self.assertEqual(len(files), 123)
-        self.assertTrue('Plant1.xlsx' in files)
+        files = listFiles(dir_path + "/TestFiles")
+        self.assertEqual(len(files), 2)
+        self.assertTrue('Plant1_test.xlsx' in files)
 
     def test_readFile(self):
         dir_path = os.path.dirname(os.path.realpath(__file__))
-        filename = 'Plant1.xlsx'
-        dataFrame = readFile(dir_path +"/ReliabilityData/" + filename )
+        filename = 'Plant1_test.xlsx'
+        dataFrame = readFile(dir_path +"/TestFiles/" + filename )
+        self.assertEqual(len(dataFrame), 9)
+        self.assertEqual(dataFrame.columns[0], 'Code')
     
     def test_stringToDate(self):
         date_string = '2021-02-14 14:00:00'
@@ -26,6 +30,8 @@ class Test(unittest.TestCase):
         self.assertEqual(dateTimeObj.year, 2021)
         self.assertEqual(dateTimeObj.day, 14)
         self.assertEqual(str(dateTimeObj.time()), '14:00:00')
+
+
 
     def test_dateToString(self):
         date_string = '2021-02-14 14:00:00'
@@ -51,25 +57,44 @@ class Test(unittest.TestCase):
 
     
     def test_DataBase(self):
-        dataBase = DataBase()
 
-        # testing reading a file and adding units
-        dir_path = os.path.dirname(os.path.realpath(__file__))
-        filename = 'Plant1.xlsx'
-        dataBase.addUnits(dir_path +"/ReliabilityData/" + filename )
-        '''
-        for key, value in dataBase.units.items():
-            print(key)
-            for i in range(2):
-                print(value[i].code)
-                print(value[i].description)
-                print(value[i].in_service_date)
-                print(value[i].out_service_date)
-                print(value[i].failure_date)
-        '''
+        self.assertEqual(len(self.dataBase.units[self.dataBase.PRESSURE_SENSOR]), 2)
+        self.assertEqual(self.dataBase.units[self.dataBase.PRESSURE_SENSOR][0].code, 'PRS-001-00001')
+
+        # Testing creating units from a folder
+        
+        self.assertEqual(len(self.dataBase.units[self.dataBase.MOTOR_PUMP2]), 3)
+
 
         # testing printing to excel
-        dataBase.printUnits()
+        self.dataBase.printUnits()
+    
+    def test_CalculateSurvival(self):
+
+        units = self.dataBase.units[self.dataBase.MOTOR_PUMP2]
+        survival = calculateSurvivalTimes(units)
+
+        self.assertEqual(survival, [4885.0, 7313.0, 8760.0])
+    
+    def test_KaplanMeierEstimator(self):
+        kp_estimator = KaplanMeierEstimator(self.dataBase.MOTOR_PUMP2, self.dataBase.units[self.dataBase.MOTOR_PUMP2])
+        self.assertEqual(kp_estimator.durations, [4885.0, 7313.0, 8760.0])
+        kp_estimator.survivalFunction()
+    
+    def test_Calculator(self):
+        # creating the real database
+        real_db = DataBase()
+        real_db.createDataBase()
+
+        calculator = Calculator(real_db, real_db.AQUISITION_SENSOR)
+        survival = calculator.kme.survivalFunction()
+        print(survival)
+        #calculator.plotKME()
+        calculator.exportKMEtofile()
+    
+    def test_ReportGenerator(self):
+        generator = ReportGenerator(self.dataBase)
+        generator.convert_to_HTML()
 
 
 if __name__ == '__main__':
