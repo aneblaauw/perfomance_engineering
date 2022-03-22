@@ -1,3 +1,4 @@
+
 from operator import index
 from utils import calculateSurvivalTimes, preparePlotValues
 import matplotlib.pyplot as plt
@@ -106,15 +107,14 @@ class KaplanMeierEstimator:
 
 
 
-
 class Calculator:
-    """Task 7. Class with management methods to extract Kaplan-Meier estimator from a data base
-    This class belongs to a DataBase and can contains functionality for creating Kaplan-Meier estimators for the different 
-    components in the database
+    """Task 7. Class with management methods to extract Kaplan-Meier estimator from a data base.
+    This class belongs to a DataBase and can contain functionality for creating Kaplan-Meier estimators for the different 
+    components in the database.
     """
 
     def __init__(self, database, component) -> None:
-        """
+        """ 
         Args:
             database (DataBase): The database for the calculator
         """

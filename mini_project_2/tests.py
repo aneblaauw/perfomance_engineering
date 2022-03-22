@@ -31,8 +31,6 @@ class Test(unittest.TestCase):
         self.assertEqual(dateTimeObj.day, 14)
         self.assertEqual(str(dateTimeObj.time()), '14:00:00')
 
-
-
     def test_dateToString(self):
         date_string = '2021-02-14 14:00:00'
         dateTimeObj = stringToDateTime(date_string)
@@ -62,9 +60,7 @@ class Test(unittest.TestCase):
         self.assertEqual(self.dataBase.units[self.dataBase.PRESSURE_SENSOR][0].code, 'PRS-001-00001')
 
         # Testing creating units from a folder
-        
         self.assertEqual(len(self.dataBase.units[self.dataBase.MOTOR_PUMP2]), 3)
-
 
         # testing printing to excel
         self.dataBase.printUnits()
@@ -89,7 +85,7 @@ class Test(unittest.TestCase):
         calculator = Calculator(real_db, real_db.AQUISITION_SENSOR)
         survival = calculator.kme.survivalFunction()
         print(survival)
-        #calculator.plotKME()
+        calculator.plotKME()
         calculator.exportKMEtofile()
     
     def test_ReportGenerator(self):

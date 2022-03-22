@@ -16,8 +16,6 @@ import pandas as pd
 #import lifelines # vet ikke om vi trenger, er for plotting
 import xlsxwriter
 import os
-#import xlwt
-#from xlwt import Workbook
 
 class DataBase:
     """
@@ -64,7 +62,7 @@ class DataBase:
                     }
     
     def createDataBase(self, dir_path=os.path.dirname(os.path.realpath(__file__)), foldername="/ReliabilityData"):
-        """Creates a database from a folder with many (or one) worksheet. Uses the addUnits() method
+        """Creates a database from a folder with many (or one) worksheet.
         """
         files = listFiles(dir_path + foldername)
         for file in files:
@@ -128,13 +126,8 @@ class Unit:
         self.in_service_date = in_service_date
         self.out_service_date = out_service_date
         self.failure_date = failure_date
-        
-        
 
 
-    
-    # Task 8. Methods to draw out Kaplan-Meier estimator from a data base. 
-    
 class ReportGenerator:
     """Task 9. Class to generate semi-automatically the HTML pages from the data base'
     Ikke testet, og usikker om det er dette de spør om.
