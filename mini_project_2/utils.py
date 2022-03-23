@@ -1,4 +1,5 @@
-# helping functions to manage the different objects
+# Contains helping functions to manage the different objects, and
+# are used in other functions for calculations. 
 
 import os
 import pandas as pd
@@ -11,8 +12,7 @@ def listFiles(path):
     Args:
         path (string): path for the files to be listed
     
-    Returns:
-        
+    Returns: files (file.txt): file to be listed
     """
 
     files = os.listdir(path)
@@ -40,7 +40,7 @@ def stringToDateTime(string):
         string (string): the string that should be converted
     
     Returns:
-        date (dateTime): The date created from the string
+        date (dateTime): the date created from the string
     """
 
     datetime_object = datetime.strptime(string, '%Y-%m-%d %H:%M:%S')
@@ -72,10 +72,11 @@ def calculateTimeDifference(startDate, endDate):
     return hours
 
 def calculateSurvivalTimes(units):
-
+    """Calculates the survival times of units."""
     durations = []
     for unit in units:
         # TODO: check if the unit has a failure date
+        # if str(unit.failure_date).:
         # We know that every unit has a in_service_date and either a failure_date or an out_service_date
         if str(unit.out_service_date) == 'NaT':
             # must use failure_date

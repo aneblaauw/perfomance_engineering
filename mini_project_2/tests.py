@@ -1,3 +1,6 @@
+# Contains functions that to test that all the functionalities
+# implemented in the program is working correctly.
+
 import string
 import unittest
 import os
@@ -42,7 +45,6 @@ class Test(unittest.TestCase):
         s = dateToString(nat)
         self.assertEqual('', s)
 
-    
     def test_timeDifference(self):
         start = stringToDateTime('2021-02-14 14:00:00')
         end = stringToDateTime('2021-02-15 14:00:00')
@@ -53,9 +55,7 @@ class Test(unittest.TestCase):
         difference = calculateTimeDifference(start, end)
         self.assertEqual(difference, 2)
 
-    
     def test_DataBase(self):
-
         self.assertEqual(len(self.dataBase.units[self.dataBase.PRESSURE_SENSOR]), 2)
         self.assertEqual(self.dataBase.units[self.dataBase.PRESSURE_SENSOR][0].code, 'PRS-001-00001')
 
@@ -66,7 +66,6 @@ class Test(unittest.TestCase):
         self.dataBase.printUnits()
     
     def test_CalculateSurvival(self):
-
         units = self.dataBase.units[self.dataBase.MOTOR_PUMP2]
         survival = calculateSurvivalTimes(units)
 
@@ -89,6 +88,7 @@ class Test(unittest.TestCase):
         calculator.exportKMEtofile()
     
     def test_ReportGenerator(self):
+        # testing that a report is generated
         generator = ReportGenerator(self.dataBase)
         generator.convert_to_HTML()
 

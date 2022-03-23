@@ -1,3 +1,4 @@
+# Contains the methods and calculations regarding Kaplan-Meier estimatior. 
 
 from operator import index
 from utils import calculateSurvivalTimes, preparePlotValues
@@ -42,8 +43,8 @@ class KaplanMeierEstimator:
      - Motor pumps of type 1, 2 and 3 (mechanical). 
     """
 
-    # This will be the keys in the dictionary to manage the units, the keys are taken from the first three letters of the 
-    # the code for the different types of units
+    # This will be the keys in the dictionary to manage the units, the keys are taken from 
+    # the first three letters of the code for the different types of units
     TEMPERATURE_SENSOR = 'TPS'
     PRESSURE_SENSOR =  'PRS'
     VIBRATION_SENSOR = 'VBS'
@@ -70,7 +71,7 @@ class KaplanMeierEstimator:
 
 
     def __init__(self, component, units):
-        """initializes the estimator
+        """Initializes the estimator.
 
         Args:
             component (str): The name of the component, uses the same codes as defined in the dataBase class
@@ -78,33 +79,28 @@ class KaplanMeierEstimator:
         """
         self.component = component
         self.units = units
-        # TODO: durations a good name?
-        self.durations = calculateSurvivalTimes(units)
+        self.durations = calculateSurvivalTimes(units) # duration (a list) of the survival times of the units
     
     def __str__(self) -> str:
         return 'Kaplan Meier Estimator, type: %s' % self.COMPONENTS[self.component]
     
 
-    # move to Calculator?
     def survivalFunction(self):
-        """Creates a list of tuples with the time (in  hours?) and number of units alive. Uses the datapoints that already
-        exists in durations list
+        """Creates a list of tuples with the time and number of units alive. 
+        Uses the datapoints that already exists in durations list.
         It is encoded as a number of points (time, number-of-survivors) ordered
-        by time. E.g.
-        (0, 10),(123, 9),(4562.3, 8),(4689.9, 7),(8701.2, 6)
+        by time. E.g. (0, 10),(123, 9),(4562.3, 8),(4689.9, 7),(8701.2, 6)
         """
         total_alive = len(self.durations)
         unique_survival_times = list(set(self.durations))
         unique_survival_times.sort()
         survival_points = []
         for time in unique_survival_times:
-            # at a given time, the total number of units alive equals the length og self.durations from that time and out
-
+            # at a given time, the total number of units alive equals the length of self.durations from that time and out
             total_alive = len(self.durations[self.durations.index(time):])
             survival_points.append((time, total_alive))
         
         return survival_points
-
 
 
 class Calculator:
@@ -113,17 +109,16 @@ class Calculator:
     components in the database.
     """
 
-    def __init__(self, database, component) -> None:
+    def __init__(self, database, component):
         """ 
         Args:
             database (DataBase): The database for the calculator
+            component (database.units[component]): a component
         """
         self.database = database
         units = self.database.units[component]
         self.kme = KaplanMeierEstimator(component, units)
         self.kme.survivalFunction()
-    
-    
     
     def plotKME(self):
         x, y = preparePlotValues(self)
@@ -135,16 +130,16 @@ class Calculator:
         plt.show()
     
     def exportKMEtofile(self):
-        # TODO, fix: multiplke lines in each picture
+        # TODO, fix: multiple lines in each picture
         x, y = preparePlotValues(self)
+
         plt.plot(x, y)
         plt.title('Survival Analysis: '+ self.kme.COMPONENTS[self.kme.component])
         plt.xlabel('lifetime [h]')
         plt.ylabel('Percent survival')
         
-        
         plt.savefig('mini_project_2/analysis/survival_analysis_'+ self.kme.component+".png")
-        #plt.show()
+        # plt.show()
 
         return 'mini_project_2/analysis/survival_analysis_'+ self.kme.component+".png"
 
