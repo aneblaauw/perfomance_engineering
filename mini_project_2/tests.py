@@ -76,7 +76,7 @@ class Test(unittest.TestCase):
         self.assertEqual(kp_estimator.durations, [4885.0, 7313.0, 8760.0])
         kp_estimator.survivalFunction()
     
-    '''
+    
     def test_Calculator(self):
         # creating the real database
         real_db = DataBase()
@@ -106,11 +106,9 @@ class Test(unittest.TestCase):
 
         calculator = Calculator(real_db, components[9])
         survival = calculator.kme.survivalFunction()
-        print('Survival: ', survival)
-        # calculator.plotKME()
-        calculator.exportKMEtofile()
+        calculator.plotAndSave()
     
-    '''
+    
     def test_ReportGenerator(self):
         # testing that a report is generated
         generator = ReportGenerator(self.dataBase)

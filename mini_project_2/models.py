@@ -133,18 +133,19 @@ class ReportGenerator:
         self.name = name
     
     def convert_to_HTML(self, filename='report', dir_path=os.path.dirname(os.path.realpath(__file__)) + '/analysis/'):
-        # TODO: fix format html
-        # TODO: fix """" mistake
-        # TODO: generate real name for each component, not only code
+        ''' Creates a html for a report
+        Assumes the png files already exists
+        '''
+
         data = "<html> \n <h1>Report for data base</h1>"
 
         for component in self.database.units.keys():
             component_title = KaplanMeierEstimator.COMPONENTS[component]
             data += "\n <h2><p>Kaplan-Meier estimate: " + component_title + "</p></h2>"
             data += "\n </br>"
-            data += "\n <img src='../analysis/survival_analysis_" + component + ".png' />"
-        # Assumes the png plot alretady exists
-        # TODO: find the path for the component
+            # Assumes the png plot alretady exists
+            data += "\n <img src='survival_analysis_" + component + ".png' />"
+        
         data += "\n </html>" # close the tags
         
         with open(dir_path + filename + ".html", "w") as file:

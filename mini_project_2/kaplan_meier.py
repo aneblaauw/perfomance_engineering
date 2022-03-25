@@ -115,29 +115,21 @@ class Calculator:
         """ 
         Args:
             database (DataBase): The database for the calculator
-            component (database.units[component]): a component
+            component (String): The name of the component (must correspond with the keys in KaplanMeier components)
         """
         self.database = database
         units = self.database.units[component]
         self.kme = KaplanMeierEstimator(component, units)
         self.kme.survivalFunction()
     
-    def plotKME(self):
-        x, y = preparePlotValues(self)
-
-        plt.plot(x, y)
-        plt.title('Survival Analysis: '+ self.kme.COMPONENTS[self.kme.component])
-        plt.xlabel('lifetime [h]')
-        plt.ylabel('Percent survival')
-        plt.show()
-    
-    def exportKMEtofile(self, file_path=None):
-        # TODO, fix: multiple lines in each picture
+    def plotAndSave(self, file_path=None):
+        """ 
+        Args:
+            file_path (String): The path where the file should be created. If nothing is given, an automatic path will be created
+        """
         x, y = preparePlotValues(self)
         if file_path == None:
            file_path = 'mini_project_2/analysis/survival_analysis_'+ self.kme.component+".png"
-        print(x)
-        print(y)
 
         plt.plot(x, y)
         plt.title('Survival Analysis: '+ self.kme.COMPONENTS[self.kme.component])
@@ -145,10 +137,6 @@ class Calculator:
         plt.ylabel('Percent survival')
         
         plt.savefig(file_path)
-        # plt.show()
-
-        return file_path
-
 
 
     
