@@ -84,7 +84,9 @@ class KaplanMeierEstimator:
     def __str__(self) -> str:
         return 'Kaplan Meier Estimator, type: %s' % self.COMPONENTS[self.component]
     
-
+    def get_components_translated(self):
+        return self.COMPONENTS
+        
     def survivalFunction(self):
         """Creates a list of tuples with the time and number of units alive. 
         Uses the datapoints that already exists in durations list.
@@ -129,19 +131,23 @@ class Calculator:
         plt.ylabel('Percent survival')
         plt.show()
     
-    def exportKMEtofile(self):
+    def exportKMEtofile(self, file_path=None):
         # TODO, fix: multiple lines in each picture
         x, y = preparePlotValues(self)
+        if file_path == None:
+           file_path = 'mini_project_2/analysis/survival_analysis_'+ self.kme.component+".png"
+        print(x)
+        print(y)
 
         plt.plot(x, y)
         plt.title('Survival Analysis: '+ self.kme.COMPONENTS[self.kme.component])
         plt.xlabel('lifetime [h]')
         plt.ylabel('Percent survival')
         
-        plt.savefig('mini_project_2/analysis/survival_analysis_'+ self.kme.component+".png")
+        plt.savefig(file_path)
         # plt.show()
 
-        return 'mini_project_2/analysis/survival_analysis_'+ self.kme.component+".png"
+        return file_path
 
 
 

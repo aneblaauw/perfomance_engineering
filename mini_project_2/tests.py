@@ -76,21 +76,46 @@ class Test(unittest.TestCase):
         self.assertEqual(kp_estimator.durations, [4885.0, 7313.0, 8760.0])
         kp_estimator.survivalFunction()
     
+    '''
     def test_Calculator(self):
         # creating the real database
         real_db = DataBase()
         real_db.createDataBase()
 
-        calculator = Calculator(real_db, real_db.AQUISITION_SENSOR)
+        TEMPERATURE_SENSOR = 'TPS'
+        PRESSURE_SENSOR =  'PRS'
+        VIBRATION_SENSOR = 'VBS'
+        AQUISITION_SENSOR  = 'AQM'
+        LOGIC_SOLVER = 'LGS'
+        SOLENOID_VALVES = 'SLV'
+        SHUTDOWN_VALVES = 'SDV'
+        MOTOR_PUMP1 = 'MP1'
+        MOTOR_PUMP2 = 'MP2'
+        MOTOR_PUMP3 = 'MP3'
+        
+        components = [TEMPERATURE_SENSOR,
+                PRESSURE_SENSOR,
+                VIBRATION_SENSOR,
+                AQUISITION_SENSOR,
+                LOGIC_SOLVER,
+                SOLENOID_VALVES,
+                SHUTDOWN_VALVES,
+                MOTOR_PUMP1,
+                MOTOR_PUMP2,
+                MOTOR_PUMP3]
+
+        calculator = Calculator(real_db, components[9])
         survival = calculator.kme.survivalFunction()
-        print(survival)
-        calculator.plotKME()
+        print('Survival: ', survival)
+        # calculator.plotKME()
         calculator.exportKMEtofile()
     
+    '''
     def test_ReportGenerator(self):
         # testing that a report is generated
         generator = ReportGenerator(self.dataBase)
         generator.convert_to_HTML()
+    
 
 
 if __name__ == '__main__':

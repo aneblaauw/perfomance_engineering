@@ -6,6 +6,7 @@ from re import U
 from matplotlib import units
 import matplotlib.pyplot as plt
 from kaplan_meier import Calculator
+from kaplan_meier import KaplanMeierEstimator
 from utils import listFiles
 from utils import readFile, dateToString
 import numpy as np
@@ -131,38 +132,20 @@ class ReportGenerator:
         self.database = database
         self.name = name
     
-    def convert_to_HTML(self, filename='report', dir_path=os.path.dirname(os.path.realpath(__file__)) + '/reports/'):
+    def convert_to_HTML(self, filename='report', dir_path=os.path.dirname(os.path.realpath(__file__)) + '/analysis/'):
         # TODO: fix format html
         # TODO: fix """" mistake
         # TODO: generate real name for each component, not only code
-        data = """<html>
-        <head></head>
-        <style>
-        h1 {text-align: center;}
-        p {text-align: center;}
-        div {text-align: center;}
-        img {text-align: center;}
-        .center {
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-            width: 50%;
-            }
-        </style>
-        <body><h1>
-                <p>Survival Analysis of + """ + self.name+"""</p>
-            </h1>
-        """
+        data = "<html> \n <h1>Report for data base</h1>"
 
-        for component, units in self.database.units.items():
-            data += """\n  <h2><p>Kaplan-Meier estimate: """ + component + """</p></h2>"""
-            # generate the estimator and draw it out
-            calculator = Calculator(self.database, component)
-            survival = calculator.kme.survivalFunction() # denne brukes ikke
-            png_path = calculator.exportKMEtofile()
-            data += "</br> <img src="+png_path + "class='center'>"
-        
-        data += """\n </body></html>""" # close the tags
+        for component in self.database.units.keys():
+            component_title = KaplanMeierEstimator.COMPONENTS[component]
+            data += "\n <h2><p>Kaplan-Meier estimate: " + component_title + "</p></h2>"
+            data += "\n </br>"
+            data += "\n <img src='../analysis/survival_analysis_" + component + ".png' />"
+        # Assumes the png plot alretady exists
+        # TODO: find the path for the component
+        data += "\n </html>" # close the tags
         
         with open(dir_path + filename + ".html", "w") as file:
             file.write(data)
