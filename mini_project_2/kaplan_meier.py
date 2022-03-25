@@ -83,9 +83,6 @@ class KaplanMeierEstimator:
     
     def __str__(self) -> str:
         return 'Kaplan Meier Estimator, type: %s' % self.COMPONENTS[self.component]
-    
-    def get_components_translated(self):
-        return self.COMPONENTS
         
     def survivalFunction(self):
         """Creates a list of tuples with the time and number of units alive. 
