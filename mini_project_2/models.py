@@ -144,7 +144,7 @@ class ReportGenerator:
             data += "\n <h2><p>Kaplan-Meier estimate: " + component_title + "</p></h2>"
             data += "\n </br>"
             # Assumes the png plot alretady exists
-            data += "\n <img src='survival_analysis_" + component + ".png' />"
+            data += "\n <img src='mini_project_2\analysis\survival_analysis_" + component + ".png' />"
         
         data += "\n </html>" # close the tags
         
