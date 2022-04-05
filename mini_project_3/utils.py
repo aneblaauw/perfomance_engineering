@@ -1,3 +1,5 @@
+# Contains helping methods
+
 
 from models import Catalog, Product, Truck, Delivery
 

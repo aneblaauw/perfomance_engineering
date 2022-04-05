@@ -1,3 +1,5 @@
+# Contains the models of this program and their functionalities
+
 '''Type of products and catalogs;
 – Products;
 – Deliveries;
@@ -9,12 +11,11 @@
 
 
 
-
-
 from datetime import datetime
 from numpy import product
 
-
+"""Task 1. Data structures to manage entities involved in the simulation process.
+"""
 class Catalog:
     def __init__(self, products) -> None:
         self.products = products # Array
@@ -30,8 +31,10 @@ class Catalog:
 class Product:
     def __init__(self, sn, weight) -> None:
         self.sn = sn
-        self.weight = weight
-        # TODO: make sure weight is between 2 and 40 kg
+        if 2 <= weight <= 40: # make sure weight is between 2 and 40 kg
+            self.weight = weight
+        else:
+            pass # TODO: bedre else
 
 
 class Delivery:
@@ -97,3 +100,10 @@ class Truck:
 
 class ClientOrder:
     pass # venter litt
+
+class Printer:
+    """Task3. In charge of printing all info related to the warehouse
+    and its operation.
+    """
+    
+    pass
