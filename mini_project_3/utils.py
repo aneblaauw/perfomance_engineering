@@ -52,4 +52,8 @@ def createRandomDelivery(catalog):
     delivery = Delivery(dict)
     return delivery
 
+def createWareHouse(alleys_n, alleys_size):
+    # creates a warehouse from high level parameters
+
+    pass
 
