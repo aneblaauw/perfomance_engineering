@@ -1,9 +1,25 @@
 # handles the operation of the warehouse
 
-from models import Robot, Cell, Warehouse, ClientOrder
+
+from utils import createWareHouse
+from models import Cell, ClientOrder, Printer
+from warehouse import Warehouse
+from robot import Robot
 
 
 
-class Simulator:
-    pass
+
+warehouse = createWareHouse(1,1)
+printer = Printer(warehouse)
+
+printer.printFloorMap()
+#printer.printFloorMapCord()
+
+warehouse.addRobots(1)
+printer.printFloorMap()
+
+
+
+    
+
     

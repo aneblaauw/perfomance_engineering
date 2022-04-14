@@ -60,20 +60,20 @@ class Delivery:
         
         return weight
     
-    def add_product(self, product, quantity):
+    def addProduct(self, product, quantity):
         # TODO: check if delivery already has the product, in that case only increase quantity
-        self.products[product] = quantity
+        self.products[product] = self.products[product] + quantity
+
         
-    def remove_product(self, product, quantity):
-        # TODO: fix
-        # lower the quantity
-        self.products.remove(product[quantity])
+    def removeProduct(self, product, quantity):
+        self.products[product] = self.products[product] - quantity
+        if  self.products[product] <= 0:
+            del  self.products[product]
+
+
     
 
-class Robot:
-    # can carry products of only one type at a time, but no more than 40kg
-    def __init__(self, ) -> None:
-        pass
+
 
 
 class Cell:
@@ -101,10 +101,41 @@ class Cell:
         self.shelves = {} # dictionary with shelves, exactly 2 (maybe array is not the best way to store shelves)
         # {shelf1: [product1, product2, ..], shelf2: [product1, product2, ...]} Max weight per shelf: ??
         # TODO: make sure the selves does not overwrite 
+   
     def addProductsToShelf(self):
-        # {shelf1: [product1, product2, ..], shelf2: [product1, product2, ...]} Max weight per shelf: ??
-        # TODO: make sure the selves does not exeed max weight
-        pass
+        # {product1: quantity, product2: quantity} Max weight per shelf: 100 kg
+        if len(self.shelves.keys()) < 2:
+            # adds it to the shelf
+            self.shelves[product] = 1
+        if product in self.shelves.keys():
+            # check if it is room for one more
+            self.shelves[product] = self.shelves[product] + 1 
+    
+    def removeProductsToShelf(self):
+        # {product1: quantity, product2: quantity} Max weight per shelf: 100 kg
+        if product in self.shelves.keys():
+            self.shelves[product] = self.shelves[product] - 1
+            if self.shelves[product] == 0:
+                del self.shelves[product]
+
+    def canAddProduct(self, product):
+        # Must check if a shelf is available 
+        # Can only be one type per shelf, and max weight is 100kg
+
+        # Step 1:
+        # check if a shelf is empty
+        if len(self.shelves.keys()) < 2:
+            # adds it to the shelf
+            return True
+            self.shelves[product] = 1
+        if product in self.shelves.keys():
+            # check if it is room for one more
+            return product.weight * self.shelves[product] + 1 <= 100
+
+    def containsProduct(self, product):
+        return product in self.shelves.keys()
+        
+
     
     def printCellCord(self):
         '''
@@ -130,45 +161,6 @@ class Cell:
         else:
             return '[ X ]'
 
-
-class Shelf:
-    def __init__(self, product, quantity) -> None:
-        # total weights of products stored on a shelf cannot exceed 100kg
-        self.product = product
-        self.quantity = quantity
-        
-
-class Warehouse:
-    def __init__(self, floor_map, catalog, robots) -> None:
-        self.floor_map = floor_map # an double linked array of cells, where cells are placed according to coordinates
-        self.catalog = catalog
-        self.robots = robots # array of robots,maybe not needed in initializing
-        self.client_orders = [] # client orders is added along the way
-
-    def add_product(self, product):
-        # Assume the product exist
-        '''
-        Adds the product from the warehouse's catalogue
-        '''
-        if not product in self.catalog:
-           self.catalog.products.append(product)
-
-    def remove_product(self, product):
-        '''
-        Remove the product from the warehouse's catalogue
-        '''
-        if product in self.catalog:
-            self.catalog.products.remove(product)   
-
-    def add_alley(self, size):
-        # code in function "addAlley" in utils.py
-        pass
-
-    def addClientOrders(self, order):
-        self.client_orders.add(order)
-
-    def addClientOrders(self, order):
-        self.client_orders.remove(order)
         
 class Truck:
     def __init__(self, deliveries) -> None:
@@ -208,7 +200,8 @@ class ClientOrder:
         if quantity == self.orders[product]:
             del self.orders[product]
         else:
-            #TODO: throw error for trying  to removemore products than exists in the order
+            #TODO: throw error for trying to remove more products than exists in the order
+            
             pass
         
 
@@ -220,4 +213,46 @@ class Printer:
     and its operation.
     """
     
-    pass
+    def __init__(self, warehouse) -> None:
+        self.warehouse = warehouse
+
+    def printFloorMap(self, ):
+        s = '\nFloor Map\n'
+        robot_loc = []
+        for robot in self.warehouse.robots:
+            robot_loc.append(robot.currentLocation)
+        for i in range(len(self.warehouse.floor_map)): 
+            if i == 7 or i == 8:
+                if [0,i+1] in robot_loc:
+                    s+= 'o'
+                    
+                else:
+                    s+= ' '
+            else:
+                s+= '|'
+            for cell in self.warehouse.floor_map[i]:
+                if [cell.x, cell.y]  in robot_loc:
+                    s += 'o'
+                else:
+                    s += ' %s ' % cell.printCellType()
+            s += '| %s \n' % str(i +1)
+        
+        columns = len(self.warehouse.floor_map[0])
+        for i in range(columns):
+            s += '    %s  ' % str(i +1)
+        
+        print(s)
+
+    def printFloorMapCord(self):
+        s = '\n'
+        for i in range(len(self.warehouse.floor_map)): 
+            s+= '|'
+            for cell in self.warehouse.floor_map[i]:
+                s += ' %s ' % cell.printCellCord()
+            s += '| %s \n' % str(i +1)
+        
+        columns = len(self.warehouse.floor_map[0])
+        for i in range(columns):
+            s += '    %s  ' % str(i +1)
+        
+        print(s)
