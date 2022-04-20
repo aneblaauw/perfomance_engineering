@@ -9,11 +9,11 @@ from robot import Robot
 
 
 
-warehouse = createWareHouse(1,1)
+warehouse = createWareHouse(2,1)
 printer = Printer(warehouse)
 
 printer.printFloorMap()
-#printer.printFloorMapCord()
+printer.printFloorMapCord()
 
 warehouse.addRobots(1)
 printer.printFloorMap()

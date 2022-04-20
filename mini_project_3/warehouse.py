@@ -2,7 +2,7 @@ from models import Cell
 from  robot import Robot
 
 class Warehouse:
-    def __init__(self, floor_map, catalog) -> None:
+    def __init__(self, catalog, floor_map = []) -> None:
         self.floor_map = floor_map # an double linked array of cells, where cells are placed according to coordinates
         self.catalog = catalog
         self.robots = [] # array of robots,maybe not needed in initializing
@@ -33,7 +33,7 @@ class Warehouse:
         # TODO: check if the storage cell lies on the left or right  side of the aisle
         # find a way tocalculate the number for the alley, and check if the coordinate lies left or right for themiddle of that  ails
         # until then
-        alley = 1 # must use the floor map to find the alley
+        alley = findAlley(storage_cell.x)
 
         middle = 3 + 6 * (alley-1)
         if storage_cell.x > middle:
@@ -127,6 +127,8 @@ class Warehouse:
         
 
         robot.route = route
+        # for testing purposes, return the route
+        return route
 
 
 
@@ -154,6 +156,7 @@ class Warehouse:
         # find an available robot and give it a task
     
     def addUnloadToRobot(self, robot, delivery):
+        
         '''
         Adds a delivery to a robot and calculates the route it must go
         Takes the product from a truck and puts it in a storage cell
@@ -189,11 +192,17 @@ class Warehouse:
         x_coor  = 2nd index
         '''
         # Test first for creating the first alley
-        x = 1
+        
         y = 1
+
+        # the x_coordinate is depending on the size of the floor_map before the alley is added
+        x = 1
+        if len(self.floor_map) > 0:
+            x = len(self.floor_map[0]) +1
 
         # Step 1: Create a numpy array for storing the new alley
         alley = []
+        index = 0 # the index for the rows in the floor_map
 
         # Step 2, create the top ailse
         # TODO: find the coordinates for the middle and end of the warehouse
@@ -211,9 +220,9 @@ class Warehouse:
             unload2 = Cell('L', x + 4, y)
             storage2 = Cell('S',x + 5,y)
 
-            alley.append([storage1, unload1, move1, move2,  unload2, storage2])
-
-            # TODO: add the cells to the floor map
+            #add the cells to the floor map
+            createOrAppend(self.floor_map, [storage1, unload1, move1, move2,  unload2, storage2], index)
+            index += 1
             y = y+1
         
         # Step 3: add the middle
@@ -225,7 +234,8 @@ class Warehouse:
         unload3 = Cell('L', x+4, y)
         unload4 = Cell('L', x +5, y)
 
-        alley.append([unload1,unload2, movetop1, movetop2,  unload3, unload4])
+        createOrAppend(self.floor_map, [unload1,unload2, movetop1, movetop2,  unload3, unload4],index)
+        index += 1
 
         y += 1
         x_cop = x
@@ -234,7 +244,9 @@ class Warehouse:
             mover = Cell('M', x_cop, y, direction='RIGHT')
             row.append(mover)
             x_cop +=  1
-        alley.append(row)
+        
+        createOrAppend(self.floor_map, row, index)
+        index += 1
 
         y += 1
         x_cop = x
@@ -244,7 +256,8 @@ class Warehouse:
             row.append(movel)
             x_cop += 1
 
-        alley.append(row)
+        createOrAppend(self.floor_map, row, index)
+        index += 1
 
         y += 1
 
@@ -255,7 +268,9 @@ class Warehouse:
         unloadbottom3 = Cell('L', x+4, y)
         unloadbottom4 = Cell('L', x +5, y)
 
-        alley.append([unloadbottom1,unloadbottom2, movebottom1, movebottom2,  unloadbottom3, unloadbottom4])
+        createOrAppend(self.floor_map,[unloadbottom1,unloadbottom2, movebottom1, movebottom2,  unloadbottom3, unloadbottom4], index)
+        index += 1
+        #alley.append([unloadbottom1,unloadbottom2, movebottom1, movebottom2,  unloadbottom3, unloadbottom4])
 
         # Step 4: add bottom
         
@@ -271,12 +286,16 @@ class Warehouse:
             unload2 = Cell('L', x + 4, y)
             storage2 = Cell('S',x + 5,y)
 
-            alley.append([storage1, unload1, move1, move2,  unload2, storage2])
+            createOrAppend(self.floor_map, [storage1, unload1, move1, move2,  unload2, storage2], index)
+            index += 1
+
+            #alley.append([storage1, unload1, move1, move2,  unload2, storage2])
             
 
         # TODO: find a way to actually add the alley to the floor map
-        # for now return the new alley
-        self.floor_map = alley
+        
+        
+        
     
     def nextAction(self, robot):
         # location: (x,y)
@@ -304,4 +323,22 @@ class Warehouse:
                 robot.route = None
                 robot.currentLocation = [0,8]
     
+
+def createOrAppend(floor_map, row, i):
+    '''
+    Help function for adding alleys
+    Checks if the floor_map has the row, if so add the  new row to existing row, else create a newrow
+    '''
+    if i < len(floor_map):
+        # add the cells to the row
+        floor_map[i] += row
+    else:
+        # create new row with the cells
+        floor_map.append(row)
+
+def findAlley(x_coord):
+    '''
+    finds the alley the storage cell belongs to
+    '''
     
+    return -1 * (-x_coord // 6)

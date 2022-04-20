@@ -143,8 +143,14 @@ class Cell:
 
         [ x, y]
         '''
-
-        return '[%s,%s]'  % (self.x,  self.y)
+        extra_x = ''
+        extra_y = ''
+        if self.x < 10:
+            extra_x = '0'
+        if self.y < 10:
+            extra_y =  '0'
+        
+        return '[%s%s,%s%s]'  % (extra_x, self.x,  extra_y,self.y)
     
     def printCellType(self):
         '''
@@ -253,6 +259,6 @@ class Printer:
         
         columns = len(self.warehouse.floor_map[0])
         for i in range(columns):
-            s += '    %s  ' % str(i +1)
+            s += '     %s   ' % str(i +1)
         
         print(s)

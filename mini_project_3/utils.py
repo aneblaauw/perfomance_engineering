@@ -54,17 +54,18 @@ def createRandomDelivery(catalog):
     delivery = Delivery(dict)
     return delivery
 
-def createWareHouse(alleys_n, alleys_size, number_of_products = 15):
+def createWareHouse(alleys_n = 1, number_of_products = 15):
     # creates a warehouse from high level parameters
     floor_map = []
     
     catalog = createCatalog(number_of_products)
     # wait with the robots
-    warehouse = Warehouse(floor_map,catalog)
-    warehouse.addAlley()
+    warehouse = Warehouse(catalog,floor_map)
+    for i in range(alleys_n):
+        warehouse.addAlley()
     return warehouse 
 
-                
+
 
         
 
