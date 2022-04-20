@@ -10,11 +10,12 @@ class Robot:
         self.route = None # the route will be created when the robot gets a task
         self.products = [] # the products the robot carries
         self.action = self.WAITING
+        self.product_to_pick_up = None
     
     def available(self):
         return (self.route is None)
     
-    def action(self):
+    def get_action(self):
         #waiting
         if self.available():
             return self.WAITING

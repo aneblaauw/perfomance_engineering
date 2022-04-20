@@ -2,9 +2,10 @@
 
 
 from utils import createWareHouse
-from models import Cell, ClientOrder, Printer
+from models import Cell, ClientOrder, Printer, Delivery
 from warehouse import Warehouse
 from robot import Robot
+import random
 
 
 
@@ -15,11 +16,86 @@ printer = Printer(warehouse)
 printer.printFloorMap()
 printer.printFloorMapCord()
 
+# TODO, fix when multiple robots exists
 warehouse.addRobots(1)
 printer.printFloorMap()
+printer.printCatalog()
+
+# TODO: create a truck delivery and unload this truck
+""" 
+The code below simulates: Creating a truck delivery, 
+a robot unloading the truck, load the delivery to the correct shelf.
+"""
+dict = {}
+'''
+# for multiple products
+for i in range(5):
+    index = random.randint(0, len(warehouse.catalog.products) -1)
+    quantity = random.randint(1,5)
+    product = warehouse.catalog.products[index]
+    dict[product] = quantity
+'''
+
+# for one product
+for product in warehouse.catalog.products:
+    dict[product] = 5
+delivery = Delivery(dict)
+print(delivery)
+
+# add this delivery to the warehouse, and begin unloading
+# when a delivery is added, the available robots takes a product from the truck and places it in an available cell
+
+
+warehouse.addDelivery(delivery)
+
+robot = warehouse.robots[0] # the warehouse only has one robot per now
+print(robot.route)
+print(robot.currentLocation)
+print(robot.products)
+
+
+# While there is a job to be done at the warehouse, the robots must work
+while warehouse.jobToBeDone():
+    for robot in warehouse.robots:
+        warehouse.nextAction(robot)
+    printer.printFloorMap()
 
 
 
-    
+# TODO: create a client order and load a delivery truck
+"""
+The code below simulates: Creating a client order, 
+a robot picking up the delivery, and loading a delivery truck.
+A client order is a delivery object, but it should be added to the client_orders list to the warehouse
+"""
+
+dict = {}
+'''
+for i in range(5):
+    index = random.randint(0, len(warehouse.catalog.products) -1)
+    quantity = random.randint(1,5)
+    product = warehouse.catalog.products[index]
+    dict[product] = quantity
+'''
+for products in warehouse.catalog.products:
+    dict[product] = 1
+client_order = Delivery(dict)
+print('Client order: ', client_order)
+
+# TODO: simulate picking up every product and placing it by the truck, when the whole order is picked up, 
+# place order in the truck
+
+warehouse.addClientOrder(client_order)
+robot = warehouse.robots[0] # the warehouse only has one robot per now
+print(robot.route)
+print(robot.currentLocation)
+print(robot.product_to_pick_up.sn)
+
+while warehouse.jobToBeDone():
+    for robot in warehouse.robots:
+        warehouse.nextAction(robot)
+    printer.printFloorMap()
+
+
 
     

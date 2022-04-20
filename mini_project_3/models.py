@@ -35,8 +35,7 @@ class Product:
         if 2 <= weight <= 40: # make sure weight is between 2 and 40 kg
             self.weight = weight
         else:
-            pass # TODO: bedre else
-
+            raise Exception("Product weight is either too light or too heavy.")
 
 class Delivery:
     def __init__(self, products) -> None:
@@ -62,18 +61,16 @@ class Delivery:
     
     def addProduct(self, product, quantity):
         # TODO: check if delivery already has the product, in that case only increase quantity
-        self.products[product] = self.products[product] + quantity
+        if product not in self.products:
+            self.products[product] = self.products[product]
+        else:
+            self.products[product] = self.products[product] + quantity
 
         
     def removeProduct(self, product, quantity):
         self.products[product] = self.products[product] - quantity
         if  self.products[product] <= 0:
             del  self.products[product]
-
-
-    
-
-
 
 
 class Cell:
@@ -102,7 +99,7 @@ class Cell:
         # {shelf1: [product1, product2, ..], shelf2: [product1, product2, ...]} Max weight per shelf: ??
         # TODO: make sure the selves does not overwrite 
    
-    def addProductsToShelf(self):
+    def addProductToShelf(self, product):
         # {product1: quantity, product2: quantity} Max weight per shelf: 100 kg
         if len(self.shelves.keys()) < 2:
             # adds it to the shelf
@@ -111,7 +108,7 @@ class Cell:
             # check if it is room for one more
             self.shelves[product] = self.shelves[product] + 1 
     
-    def removeProductsToShelf(self):
+    def removeProductFromShelf(self, product):
         # {product1: quantity, product2: quantity} Max weight per shelf: 100 kg
         if product in self.shelves.keys():
             self.shelves[product] = self.shelves[product] - 1
@@ -136,11 +133,9 @@ class Cell:
         return product in self.shelves.keys()
         
 
-    
     def printCellCord(self):
         '''
-        prints a cell with x and y coordinate
-
+        Prints a cell with x and y coordinate
         [ x, y]
         '''
         extra_x = ''
@@ -154,7 +149,7 @@ class Cell:
     
     def printCellType(self):
         '''
-        prints the cell according to the type
+        Prints the cell according to the type
         move:    [ U ] with the direction î
         load:    [   ]
         storage: [ X ]
@@ -166,11 +161,41 @@ class Cell:
             return '[   ]'
         else:
             return '[ X ]'
+            
+    def printCellInfo(self):
+        s = 'Cell %s \n' % self.printCellCord()
+        if self.type == self.STORAGE:
+            s+= 'Shelves:'
+            for product, quantity in self.shelves.items():
+                s += '%s: %s' % (product.sn, quantity)
+        return s
 
         
 class Truck:
-    def __init__(self, deliveries) -> None:
-        self.deliveries = deliveries #array of deliveries
+    def __init__(self, products={}) -> None:
+        self.products = product # adictionary on format {product: quantity}
+
+    def get_total_weight(self):
+        weight = 0
+        for product in self.products.keys():
+            weight += product.weight * self.products[product]
+        
+        return weight
+    
+    def add_product(self, product, quantity):
+        if product in self.orders.keys():
+            self.orders[product] = self.orders[product] + quantity
+        else:
+            self.orders[product] = quantity
+        
+    def remove_product(self, product, quantity):
+        if quantity < self.orders[product]:
+            self.orders[product] = self.orders[product] - quantity
+        if quantity == self.orders[product]:
+            del self.orders[product]
+        else:
+            raise Exception("Error, trying to remove more products than exists in the order.")
+
 
 
 class ClientOrder:
@@ -178,14 +203,13 @@ class ClientOrder:
         self.orders = orders # a dictionary on the format {product1: quantity, product2: quantity, ...}
     
     def __str__(self) -> str:
-        string = 'Delivery \n created at: %s \n' % self.created_at
+        string = 'Client Order \n created at: %s \n' % self.created_at
         
         for product, quantity in self.products.items():
             string += ' %s – %s stk\n' % (product.sn, quantity)
         
         string += 'Total weight: %s kg' % self.get_total_weight()
         return string
-    
     
     def get_total_weight(self):
         weight = 0
@@ -206,12 +230,7 @@ class ClientOrder:
         if quantity == self.orders[product]:
             del self.orders[product]
         else:
-            #TODO: throw error for trying to remove more products than exists in the order
-            
-            pass
-        
-
-    
+            raise Exception("Error, trying to remove more products than exists in the order.")
 
 
 class Printer:
@@ -238,7 +257,7 @@ class Printer:
                 s+= '|'
             for cell in self.warehouse.floor_map[i]:
                 if [cell.x, cell.y]  in robot_loc:
-                    s += 'o'
+                    s += ' [ o ] '
                 else:
                     s += ' %s ' % cell.printCellType()
             s += '| %s \n' % str(i +1)
@@ -262,3 +281,6 @@ class Printer:
             s += '     %s   ' % str(i +1)
         
         print(s)
+    
+    def printCatalog(self):
+        print(self.warehouse.catalog)
