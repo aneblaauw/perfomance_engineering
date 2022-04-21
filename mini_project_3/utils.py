@@ -1,8 +1,7 @@
 # Contains helping methods
 
 
-from models import Catalog, Product, Truck, Delivery, Cell
-from warehouse import Warehouse
+from models import *
 
 import random
 import string

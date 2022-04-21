@@ -1,9 +1,8 @@
 
 import unittest
 
-from utils import createCatalog, createRandomDelivery, createTruckLoading, createWareHouse
-from warehouse import findAlley
-from models import Delivery, Truck, Cell
+from utils import *
+from models import *
 import random
 
 class Test(unittest.TestCase):

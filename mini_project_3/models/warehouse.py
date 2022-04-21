@@ -1,8 +1,9 @@
 # Handles the operations in the warehouse
 
 
-from models import Cell, Truck
-from  robot import Robot
+from .cell import *
+from .truck import *
+from .robot import *
 
 class Warehouse:
     def __init__(self, catalog, floor_map = []) -> None:

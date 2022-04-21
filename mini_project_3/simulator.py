@@ -2,9 +2,8 @@
 
 
 from utils import createWareHouse
-from models import Cell, ClientOrder, Printer, Delivery
-from warehouse import Warehouse
-from robot import Robot
+from models import *
+
 import random
 
 
