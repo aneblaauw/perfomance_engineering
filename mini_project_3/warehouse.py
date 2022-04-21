@@ -1,7 +1,7 @@
 # Handles the operations in the warehouse
 
-from mini_project_3.models import Truck
-from models import Cell
+
+from models import Cell, Truck
 from  robot import Robot
 
 class Warehouse:
@@ -26,15 +26,23 @@ class Warehouse:
         return False
     
     def addProductToTruck(self, product):
-        self.deliveryTruck.add_product(product)
+        
 
-        # TODO: check if the truck is full
-        # if full, drive away and create a new truck
+        if self.deliveryTruck.canAdd(product):
+            self.deliveryTruck.add_product(product, 1)
+
+        
+        else:
+            print('Truck is full, drives away')
+            # truck drives away and a new is created
+            self.deliveryTruck = Truck()
+            print('New truck is created')
+
 
     
     def addRobots(self, n =1):
         '''
-        creates a given numberof robots and adds it to the list'''
+        creates a given number of robots and adds it to the list'''
         for i in range(n):
             self.robots.append(Robot())
     
@@ -165,6 +173,7 @@ class Warehouse:
 
     def addDelivery(self, delivery):
         self.deliveries.append(delivery)
+        print('Delivery added')
         for robot in self.robots:
             if robot.available():
                 self.addUnloadToRobot(robot, delivery)
@@ -209,7 +218,7 @@ class Warehouse:
         '''
         # Step 1, find the  cell where the product can be placed
         print(client_order)
-        product = list(client_order.products.keys())[0]
+        product = list(client_order.orders.keys())[0]
         for row in self.floor_map:
             for cell in row:
                 if cell.type == Cell.STORAGE:
@@ -220,12 +229,18 @@ class Warehouse:
                         self.calculateRoute(cell, robot)
                         client_order.removeProduct(product, 1)
                         robot.product_to_pick_up = product
-                        if len(client_order.products) == 0:
+                        if len(client_order.orders) == 0:
                             # client_order is finished
                             self.client_orders.remove(client_order)
                             print('Client Order Finished')
                         robot.action = Robot.PICKUP
                         return True
+        print('The product is not in the warehouse')
+        client_order.removeProduct(product, 1)
+        if len(client_order.orders) == 0:
+                            # client_order is finished
+                            self.client_orders.remove(client_order)
+                            print('Client Order Finished')
         return False
 
 
@@ -364,17 +379,18 @@ class Warehouse:
                     robot.products.append(robot.product_to_pick_up)
                     currentCell.removeProductFromShelf(robot.product_to_pick_up)
                     robot.product_to_pick_up = None
-                    print('Product removed from shelf!')
+                    
                 elif robot.action == Robot.UNLOAD:
                     # add the product to the shelf on the cell and remove from robot
                     currentCell.addProductToShelf(robot.products.pop())
-                    print('Product Added to shelf!')
+                    
             
             if len(robot.route) == 0:
                 if robot.action == Robot.PICKUP:
                     #TODO load the product to the truck, and remove from the robot
-                    product = robot.products.pop()
-                    print('product added to Truck')
+                    while len(robot.products) > 0:
+                        self.addProductToTruck(robot.products.pop())
+                        print('product added to Truck')
 
                 robot.route = None
                 robot.currentLocation = [0,8]

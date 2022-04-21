@@ -36,6 +36,9 @@ class Product:
             self.weight = weight
         else:
             raise Exception("Product weight is either too light or too heavy.")
+    
+    def __str__(self) -> str:
+        return self.sn
 
 class Delivery:
     def __init__(self, products) -> None:
@@ -95,25 +98,54 @@ class Cell:
         self.x = x
         self.y = y
         self.direction = direction # Beste måten å lagre retning på?
-        self.shelves = {} # dictionary with shelves, exactly 2 (maybe array is not the best way to store shelves)
-        # {shelf1: [product1, product2, ..], shelf2: [product1, product2, ...]} Max weight per shelf: ??
-        # TODO: make sure the selves does not overwrite 
+        if self.type == self.STORAGE:
+            self.shelves = {'shelf1': {}, 'shelf2': {}} # dictionary with shelves, exactly 2 (maybe array is not the best way to store shelves)
+        # {shelf1: {product: quntity}, shelf2: {product: quntity}} 
+        else:
+            self.shelves =  None
+        
+    def getProductsOnShelf(self):
+        if self.type != self.STORAGE:
+            raise Exception("Error, cell of type %s doesn't have shelves", self.type)
+        else:
+            products = []
+            for shelf, items in self.shelves.items():
+                for product in items.keys():
+                    products.append(product)
+            
+            return products
    
     def addProductToShelf(self, product):
-        # {product1: quantity, product2: quantity} Max weight per shelf: 100 kg
-        if len(self.shelves.keys()) < 2:
-            # adds it to the shelf
-            self.shelves[product] = 1
-        if product in self.shelves.keys():
-            # check if it is room for one more
-            self.shelves[product] = self.shelves[product] + 1 
+        # {shelf1: {product: quntity}, shelf2: {product: quntity}}   Max weight per shelf: 100 kg
+        for shelf, products in self.shelves.items():
+            # check if shelf is empty
+            if not products:
+                # add the product
+                products[product] = 1
+                #doesn't need to check the next shelf
+                break
+            else:
+                # must check if it is the correct shelf
+                if product in products.keys():
+                    # assumes we have checked that the shelve can have the product
+                    # add one to the shelf
+                    products[product] =  products[product] + 1
+                    #doesn't need to check the next shelf
+                    break
+        
+        print('Product added to shelf!')
+        print(self.printCellShelves())
     
     def removeProductFromShelf(self, product):
-        # {product1: quantity, product2: quantity} Max weight per shelf: 100 kg
-        if product in self.shelves.keys():
-            self.shelves[product] = self.shelves[product] - 1
-            if self.shelves[product] == 0:
-                del self.shelves[product]
+        #{shelf1: {product: quntity}, shelf2: {product: quntity}}   Max weight per shelf: 100 kg
+        for shelf, products in self.shelves.items():
+            if product in products.keys():
+                products[product] = products[product] -1
+                if products[product] == 0:
+                    del products[product]
+        print('Product removed from shelf!')
+        print(self.printCellShelves())
+                    
 
     def canAddProduct(self, product):
         # Must check if a shelf is available 
@@ -121,16 +153,24 @@ class Cell:
 
         # Step 1:
         # check if a shelf is empty
-        if len(self.shelves.keys()) < 2:
-            # adds it to the shelf
+        if len(self.getProductsOnShelf()) < 2:
+            # has room for more products
             return True
-            self.shelves[product] = 1
-        if product in self.shelves.keys():
-            # check if it is room for one more
-            return product.weight * self.shelves[product] + 1 <= 100
+        else:
+            # check if the shelves has the correct type of products
+            if product in self.getProductsOnShelf():
+                # check if there is room for one more
+                for shelf, products in self.shelves.items():
+                    if product in list(products.keys()):
+                        # calculate total weight for this shelf
+                        total_weight = product.weight * products[product] +1
+                        if total_weight <=100: #kg
+                            # can add
+                            return True
+        return False
 
     def containsProduct(self, product):
-        return product in self.shelves.keys()
+        return product in self.getProductsOnShelf()
         
 
     def printCellCord(self):
@@ -166,14 +206,39 @@ class Cell:
         s = 'Cell %s \n' % self.printCellCord()
         if self.type == self.STORAGE:
             s+= 'Shelves:'
-            for product, quantity in self.shelves.items():
-                s += '%s: %s' % (product.sn, quantity)
+            s+= self.printCellShelves()
         return s
+    
+    def printCellShelves(self):
+        s = ''
+        if self.shelves is not None:
+            for shelf in list(self.shelves.keys()):
+                s = s + shelf + '\n'
+                for product in self.shelves[shelf]:
+                    print('Product: ', product)
+                    total_weight = product.weight * self.shelves[shelf][product]
+                    s+= 'Product: %s - %s stk \n Total weight: %s\n' % (product.sn, self.shelves[shelf][product], total_weight)
+                    
+        
+        return s
+                    
+            
 
         
 class Truck:
+    MAX_WEIGHT = 20000 #kg
     def __init__(self, products={}) -> None:
-        self.products = product # adictionary on format {product: quantity}
+        self.products = products # adictionary on format {product: quantity}
+
+    def __str__(self) -> str:
+        string = 'Truck: \n'
+        
+        for product, quantity in self.products.items():
+            string += ' %s – %s stk\n' % (product.sn, quantity)
+        
+        string += 'Total weight: %s kg' % self.get_total_weight()
+        return string
+        
 
     def get_total_weight(self):
         weight = 0
@@ -182,17 +247,24 @@ class Truck:
         
         return weight
     
+    def canAdd(self, product):
+        return self.get_total_weight() + product.weight <= self.MAX_WEIGHT
+
+    
     def add_product(self, product, quantity):
-        if product in self.orders.keys():
-            self.orders[product] = self.orders[product] + quantity
+        
+        if product in self.products.keys():
+            self.products[product] = self.products[product] + quantity
         else:
-            self.orders[product] = quantity
+            self.products[product] = quantity
+        print('Product added to truck')
+        print(self)
         
     def remove_product(self, product, quantity):
-        if quantity < self.orders[product]:
-            self.orders[product] = self.orders[product] - quantity
-        if quantity == self.orders[product]:
-            del self.orders[product]
+        if quantity < self.products[product]:
+            self.products[product] = self.products[product] - quantity
+        if quantity == self.products[product]:
+            del self.products[product]
         else:
             raise Exception("Error, trying to remove more products than exists in the order.")
 
@@ -201,33 +273,37 @@ class Truck:
 class ClientOrder:
     def __init__(self, orders) -> None:
         self.orders = orders # a dictionary on the format {product1: quantity, product2: quantity, ...}
+        self.created_at = datetime.today()
     
     def __str__(self) -> str:
         string = 'Client Order \n created at: %s \n' % self.created_at
         
-        for product, quantity in self.products.items():
+        for product, quantity in self.orders.items():
             string += ' %s – %s stk\n' % (product.sn, quantity)
         
-        string += 'Total weight: %s kg' % self.get_total_weight()
+        string += 'Total weight: %s kg' % self.getTotalWeight()
         return string
     
-    def get_total_weight(self):
+    def getTotalWeight(self):
         weight = 0
-        for product in self.products.keys():
-            weight += product.weight * self.products[product]
+        for product in self.orders.keys():
+            weight += product.weight * self.orders[product]
         
         return weight
     
-    def add_product(self, product, quantity):
+    def addProduct(self, product, quantity):
         if product in self.orders.keys():
             self.orders[product] = self.orders[product] + quantity
         else:
             self.orders[product] = quantity
         
-    def remove_product(self, product, quantity):
+    def removeProduct(self, product, quantity):
+        print('Trying to remove product from this order')
+        print(self.orders[product])
+        print(quantity)
         if quantity < self.orders[product]:
             self.orders[product] = self.orders[product] - quantity
-        if quantity == self.orders[product]:
+        elif quantity == self.orders[product]:
             del self.orders[product]
         else:
             raise Exception("Error, trying to remove more products than exists in the order.")
