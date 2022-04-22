@@ -18,7 +18,6 @@ warehouse.addRobots(1)
 printer.printFloorMap()
 printer.printCatalog()
 
-# TODO: create a truck delivery and unload this truck
 """ 
 The code below simulates: Creating a truck delivery, 
 a robot unloading the truck, load the delivery to the correct shelf.
