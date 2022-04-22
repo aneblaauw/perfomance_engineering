@@ -61,7 +61,6 @@ while warehouse.jobToBeDone():
 
 print('Delivery is finished unloading!')
 
-# TODO: create a client order and load a delivery truck
 """
 The code below simulates: Creating a client order, 
 a robot picking up the delivery, and loading a delivery truck.

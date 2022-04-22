@@ -1,4 +1,5 @@
 from datetime import datetime
+
 class ClientOrder:
     def __init__(self, orders) -> None:
         self.orders = orders # a dictionary on the format {product1: quantity, product2: quantity, ...}
@@ -61,7 +62,6 @@ class Delivery:
         return weight
     
     def addProduct(self, product, quantity):
-        # TODO: check if delivery already has the product, in that case only increase quantity
         if product not in self.products:
             self.products[product] = self.products[product]
         else:

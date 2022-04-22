@@ -11,7 +11,6 @@ class Test(unittest.TestCase):
         self.warehouse = createWareHouse(5, 5)
         self.warehouse.addRobots(1)
 
-
     def test_createCatalog(self):
         n = 5
         catalog = createCatalog(n)
@@ -100,11 +99,6 @@ class Test(unittest.TestCase):
         #correct1 = [[0, 8], [1, 8], [2, 8], [3, 8], [3, 7], [3, 6], [3, 5], [3, 4], [3, 3], [3, 2], [3, 1], [2, 1], [1, 1], [2, 1], [3, 1], [4, 1], [4, 2], [4, 3], [4, 4], [4, 5], [4, 6], [4, 7], [4, 8], [4, 9], [3, 9], [2, 9], [1, 9], [0, 9]]
         #self.assertEqual(route1, correct1)
         print(route1)
-
-
-
-
-
 
 
 if __name__ == '__main__':

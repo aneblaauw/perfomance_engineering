@@ -140,6 +140,5 @@ class Cell:
                     print('Product: ', product)
                     total_weight = product.weight * self.shelves[shelf][product]
                     s+= 'Product: %s - %s stk \n Total weight: %s\n' % (product.sn, self.shelves[shelf][product], total_weight)
-                    
-        
+    
         return s
