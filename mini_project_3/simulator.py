@@ -7,8 +7,6 @@ from models import *
 import random
 
 
-
-
 warehouse = createWareHouse(1,5)
 printer = Printer(warehouse)
 
