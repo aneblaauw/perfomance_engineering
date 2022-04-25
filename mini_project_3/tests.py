@@ -13,7 +13,6 @@ class Test(unittest.TestCase):
         self.warehouse = createWareHouse(5, 5)
         self.warehouse.addRobots(1)
 
-
     def test_createCatalog(self):
         n = 5
         catalog = createCatalog(n)
@@ -109,11 +108,6 @@ class Test(unittest.TestCase):
         route1 = self.warehouse.calculateRoute(cell1,self.warehouse.robots[0])
         time = optimizer.calculateTimeRobot(route1)
         self.assertEqual(time, 490)
-
-
-
-
-
 
 
 if __name__ == '__main__':

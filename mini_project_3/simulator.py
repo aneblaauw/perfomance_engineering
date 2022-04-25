@@ -7,8 +7,6 @@ from models import *
 import random
 
 
-
-
 warehouse = createWareHouse(1,5)
 printer = Printer(warehouse)
 
@@ -20,7 +18,6 @@ warehouse.addRobots(1)
 printer.printFloorMap()
 printer.printCatalog()
 
-# TODO: create a truck delivery and unload this truck
 """ 
 The code below simulates: Creating a truck delivery, 
 a robot unloading the truck, load the delivery to the correct shelf.
@@ -63,7 +60,6 @@ while warehouse.jobToBeDone():
 
 print('Delivery is finished unloading!')
 
-# TODO: create a client order and load a delivery truck
 """
 The code below simulates: Creating a client order, 
 a robot picking up the delivery, and loading a delivery truck.

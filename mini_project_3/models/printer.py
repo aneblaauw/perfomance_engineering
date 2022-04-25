@@ -14,8 +14,7 @@ class Printer:
         for i in range(len(self.warehouse.floor_map)): 
             if i == 7 or i == 8:
                 if [0,i+1] in robot_loc:
-                    s+= 'o'
-                    
+                    s+= 'o'    
                 else:
                     s+= ' '
             else:

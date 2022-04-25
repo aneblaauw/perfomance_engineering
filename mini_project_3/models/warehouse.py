@@ -1,6 +1,5 @@
 # Handles the operations in the warehouse
 
-
 from .cell import *
 from .truck import *
 from .robot import *
@@ -270,8 +269,6 @@ class Warehouse:
         index = 0 # the index for the rows in the floor_map
 
         # Step 2, create the top ailse
-        # TODO: find the coordinates for the middle and end of the warehouse
-
         # coordinates for the first storage cell
         
         for i in range(6):
@@ -354,10 +351,7 @@ class Warehouse:
             index += 1
 
             #alley.append([storage1, unload1, move1, move2,  unload2, storage2])
-            
-
-        # TODO: find a way to actually add the alley to the floor map
-        
+                    
     
     def nextAction(self, robot):
         # location: (x,y)
@@ -388,7 +382,6 @@ class Warehouse:
             
             if len(robot.route) == 0:
                 if robot.action == Robot.PICKUP:
-                    #TODO load the product to the truck, and remove from the robot
                     while len(robot.products) > 0:
                         self.addProductToTruck(robot.products.pop())
                         print('product added to Truck')
