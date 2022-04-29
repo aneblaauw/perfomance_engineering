@@ -29,7 +29,6 @@ class Test(unittest.TestCase):
         #print(delivery)
         #print(self.catalog)
         #print(delivery.get_total_weight())
-        # TODO: faktisk lag test
     
     def test_TruckLoad(self):
         # creates a couple of deliveries
@@ -49,7 +48,6 @@ class Test(unittest.TestCase):
     def test_createWareHouse(self):
         floor_map = []
         floor_map = addAlley(floor_map=floor_map)
-        # TODO: find way to actually add the alley to the floor map
         #printFloorMap(floor_map)
     
     def test_createWareHouse(self):

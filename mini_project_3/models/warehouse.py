@@ -54,7 +54,6 @@ class Warehouse:
 
         route = [robot.currentLocation]
 
-        # TODO: check if the storage cell lies higher or lower than start
         if storage_cell.y < 8:
             direction = 'UP'
         else:
@@ -189,7 +188,6 @@ class Warehouse:
         for row in self.floor_map:
             for cell in row:
                 if cell.type == Cell.STORAGE:
-                    # TODO: check if the cell has room for the product
                     if cell.canAddProduct(product):
                         print('Cell to store product %s: ' % (product.sn))
                         print(cell.printCellInfo())

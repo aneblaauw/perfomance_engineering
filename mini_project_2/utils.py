@@ -75,7 +75,6 @@ def calculateSurvivalTimes(units):
     """Calculates the survival times of units."""
     durations = []
     for unit in units:
-        # TODO: check if the unit has a failure date
         # if str(unit.failure_date).:
         # We know that every unit has a in_service_date and either a failure_date or an out_service_date
         if str(unit.out_service_date) == 'NaT':
@@ -83,7 +82,6 @@ def calculateSurvivalTimes(units):
             end_date = unit.failure_date
         else:
             end_date = unit.out_service_date
-            # TODO: is this correct?
             # Should we use the out_service_date in the same way we use failure date?
         survival_time = calculateTimeDifference(unit.in_service_date, end_date)
         durations.append(survival_time)

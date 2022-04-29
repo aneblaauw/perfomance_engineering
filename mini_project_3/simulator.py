@@ -13,8 +13,7 @@ printer = Printer(warehouse)
 printer.printFloorMap()
 printer.printFloorMapCord()
 
-# TODO, fix when multiple robots exists
-warehouse.addRobots(1)
+warehouse.addRobots(1) # test for 1 robot
 printer.printFloorMap()
 printer.printCatalog()
 
@@ -84,7 +83,6 @@ client_order = ClientOrder(dict)
 
 print('Client order added: ', client_order)
 
-# TODO: simulate picking up every product and placing it by the truck, when the whole order is picked up, 
 # place order in the truck
 
 warehouse.addClientOrder(client_order)

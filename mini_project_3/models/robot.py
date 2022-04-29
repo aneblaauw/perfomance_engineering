@@ -22,9 +22,8 @@ class Robot:
         
         if len(self.products) == 0 and not self.available():
             return self.PICKUP
-        
         else:
-            return self.PICKUP
+            return self.UNLOAD
     
 
     
