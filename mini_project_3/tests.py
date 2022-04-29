@@ -72,6 +72,7 @@ class Test(unittest.TestCase):
         route3 = self.warehouse.calculateRoute(cell3,self.warehouse.robots[0])
         correct3 = [[0, 8], [1, 8], [2, 8], [3, 8], [3, 9], [3, 10], [3, 11], [3, 12], [3, 13], [3, 14], [3, 15], [3, 16], [4, 16], [5, 16], [6, 16], [5, 16], [4, 16], [4, 15], [4, 14], [4, 13], [4, 12], [4, 11], [4, 10], [4, 9], [3, 9], [2, 9], [1, 9], [0, 9]]
         self.assertEqual(route3, correct3)
+  
     def test_findAlley(self):
         # All cells between 1 and 6 should belong to alley 1
         self.assertEqual(1, findAlley(1))

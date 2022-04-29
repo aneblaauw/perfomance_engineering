@@ -1,6 +1,5 @@
 # handles the operation of the warehouse
 
-
 from utils import createWareHouse
 from models import *
 
@@ -42,7 +41,6 @@ delivery = Delivery(dict)
 # add this delivery to the warehouse, and begin unloading
 # when a delivery is added, the available robots takes a product from the truck and places it in an available cell
 
-
 warehouse.addDelivery(delivery)
 
 robot = warehouse.robots[0] # the warehouse only has one robot per now
@@ -82,8 +80,6 @@ for products in warehouse.catalog.products:
 client_order = ClientOrder(dict)
 
 print('Client order added: ', client_order)
-
-# place order in the truck
 
 warehouse.addClientOrder(client_order)
 robot = warehouse.robots[0] # the warehouse only has one robot per now

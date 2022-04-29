@@ -8,7 +8,7 @@ class Optimizer:
         '''
         calculates the time the given route will take
         '''
-        time = 0 #s
+        time = 0 #s: seconds
         for coord in route:
             cell = self.warehouse.floor_map[coord[1]-1][coord[0]-1]
             time += cell.getTime()

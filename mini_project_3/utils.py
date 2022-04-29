@@ -1,6 +1,5 @@
 # Contains helping methods
 
-
 from models import *
 
 import random
@@ -58,7 +57,6 @@ def createWareHouse(alleys_n = 1, number_of_products = 15):
     floor_map = []
     
     catalog = createCatalog(number_of_products)
-    # wait with the robots
     warehouse = Warehouse(catalog,floor_map)
     for i in range(alleys_n):
         warehouse.addAlley()

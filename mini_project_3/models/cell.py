@@ -21,7 +21,7 @@ class Cell:
         self.type = type
         self.x = x
         self.y = y
-        self.direction = direction # Beste måten å lagre retning på?
+        self.direction = direction
         if self.type == self.STORAGE:
             self.shelves = {'shelf1': {}, 'shelf2': {}} # dictionary with shelves, exactly 2 (maybe array is not the best way to store shelves)
         # {shelf1: {product: quntity}, shelf2: {product: quntity}} 
