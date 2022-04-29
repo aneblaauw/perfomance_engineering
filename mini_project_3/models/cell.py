@@ -10,6 +10,8 @@ class Cell:
     LEFT = 'LEFT'
     RIGHT = 'RIGHT'
 
+    TIME = { MOVE: 10, STORAGE: 120, LOAD: 0}
+
     directions = {UP: 'U', DOWN: 'D', LEFT: 'L', RIGHT: 'R'}
     
     def  __init__(self, type, x, y, direction =  None, shelves = None) -> None:
@@ -25,6 +27,13 @@ class Cell:
         # {shelf1: {product: quntity}, shelf2: {product: quntity}} 
         else:
             self.shelves =  None
+    
+    def getTime(self):
+        '''
+        Returns the time it takes for a robot to move in this cell
+        '''
+
+        return self.TIME[self.type]
         
     def getProductsOnShelf(self):
         if self.type != self.STORAGE:

@@ -1,8 +1,10 @@
 
 import unittest
 
+
 from utils import *
 from models import *
+from optimizer import Optimizer
 import random
 
 class Test(unittest.TestCase):
@@ -97,6 +99,13 @@ class Test(unittest.TestCase):
         #correct1 = [[0, 8], [1, 8], [2, 8], [3, 8], [3, 7], [3, 6], [3, 5], [3, 4], [3, 3], [3, 2], [3, 1], [2, 1], [1, 1], [2, 1], [3, 1], [4, 1], [4, 2], [4, 3], [4, 4], [4, 5], [4, 6], [4, 7], [4, 8], [4, 9], [3, 9], [2, 9], [1, 9], [0, 9]]
         #self.assertEqual(route1, correct1)
         print(route1)
+    
+    def test_calculateTime(self):
+        optimizer = Optimizer(self.warehouse)
+        cell1 = Cell('S', 7,1)
+        route1 = self.warehouse.calculateRoute(cell1,self.warehouse.robots[0])
+        time = optimizer.calculateTimeRobot(route1)
+        self.assertEqual(time, 490)
 
 
 if __name__ == '__main__':
