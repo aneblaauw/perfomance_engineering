@@ -8,10 +8,11 @@ class Test(unittest.TestCase):
     def setUp(self):
         filename = r'C:\Users\Utveksling\NTNU\GitHub\perfomance_engineering\mini_project_4\benchmark_1.txt'
         self.problem = Problem()
-
-        # self.problem.createFromBenchmark(filename)
+        
+        self.problem.createFromBenchmark(filename)
     
     def test_Schedule(self):
+
         print('Problem oversikt')
         print(self.problem)
         print('Schedule:')
@@ -23,7 +24,7 @@ class Test(unittest.TestCase):
         filename = r'C:\Users\Utveksling\NTNU\GitHub\perfomance_engineering\mini_project_4\benchmark_1.txt'
         problem = Problem()
         
-        problem.createFromBenchmark(filename)
+        # self.problem.createFromBenchmark(filename)
         time = calc.totalOperationTime(problem)
         print(time)
 
