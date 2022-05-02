@@ -4,16 +4,12 @@ import unittest
 
 from models import Problem, Calculator
 
-
-
-
-
 class Test(unittest.TestCase):
     def setUp(self):
-        filename = '/Users/ane/Projects/Performance Engineering/mini_project_4/benchmark_1.txt'
+        filename = r'C:\Users\Utveksling\NTNU\GitHub\perfomance_engineering\mini_project_4\benchmark_1.txt'
         self.problem = Problem()
-        
-        self.problem.createFromBenchmark(filename)
+
+        # self.problem.createFromBenchmark(filename)
     
     def test_Schedule(self):
         print('Problem oversikt')
@@ -24,7 +20,7 @@ class Test(unittest.TestCase):
     def test_calculator(self):
         calc = Calculator()
 
-        filename = '/Users/ane/Projects/Performance Engineering/mini_project_4/benchmark_1.txt'
+        filename = r'C:\Users\Utveksling\NTNU\GitHub\perfomance_engineering\mini_project_4\benchmark_1.txt'
         problem = Problem()
         
         problem.createFromBenchmark(filename)
@@ -33,7 +29,5 @@ class Test(unittest.TestCase):
 
     
     
-
-
 if __name__ == '__main__':
     unittest.main()
