@@ -6,6 +6,7 @@ Hint: Problems should be managed according to the factory patterns, i.e. it shou
 be possible to create machines, jobs and operations via methods of the class Problem.
 '''
 
+from itertools import permutations
 
 class Problem:
     '''
@@ -25,7 +26,7 @@ class Problem:
         s = ''
         for job in self.jobs:
             s += '%s = %s' % (job, job.printOperations())
-            s += '/n'
+            s += ' /n '
         
         return s
     
@@ -45,107 +46,160 @@ class Problem:
         s += ']'
         return s
     
-    def createFromBenchmark(self, filename):
-        '''
-        reads from txt file and creates a problem
-        '''
-        # TODO: fix filename path with sys.path eller noe
-        
-        try:
-            with open(filename) as file:
-                # line 1 -> create needed jobs and machines
-                lines = file.readlines()
-                info = lines[0].split(' ')
-                
-                n_jobs = int(info[0])
-                n_machines = int(info[1])
-                for i in range(n_jobs):
-                    job = Job(i+1)
-                    self.jobs.append(job)
-
-                for i in range(n_machines):
-                    machine = Machine(i+1)
-                    self.machines.append(machine)
-
-                # line 2 -> end is operations
-                for i in range(1, len(lines)):
-                    job = self.getJob(i)
-                    info = lines[i].split(' ')
-                    """
-                    We know that from a line ['3', '3', '4', '2', '2', '1', '1\n']
-
-                    [total operations, machine, time, machine, time, ...]
-
-                    """
-                    total_op = int(info[0])
-                    for i in range(total_op): # 0,1,2
-                        # if i =0, index = 1 and 2
-                        # if i=1, index = 3 and 4
-                        # if i=2, index = 5 and 6
-                        # if i=3, index = 7 and 8
-
-                        index1 = i*2 +1 # mavhine index
-                        index2 =i*2 +2 # time index
-
-                        machineid = int(info[index1])
-                        timespan = int(info[index2])
-                      
-                        operation = Operation(self.getMachine(machineid), timespan)
-                        # add operation to the job
-                        job.addOperation(operation)
-                file.close()
-                
-        except FileNotFoundError as fnf_error:
-            print(fnf_error)
         
     def getMachine(self, id):
         for machine in self.machines:
             if machine.id == id:
                 return machine
-        
-        #raise Exception("Machine does not exist.")
-    
+        raise Exception("Machine does not exist.")
+            
     def getJob(self, id):
         for job in self.jobs:
             if job.id == id:
                 return job
-        #raise Exception("Job does not exist.")
+        raise Exception("Job does not exist.")
+    
+    def getJobs(self):
+        jobs = []
+        for job in self.jobs:
+            jobs.append(job.id)
+        
+        return jobs
+
     
     def getSchedule(self):
+        '''
+        The operations in the schedule is on the format (job_id, job_nr) -> 
+        job_nr is the index of the operation in the job.operations list'''
         # iterates through the jobs and returns a schedule of the different jobs
         schedule = []
-        print(self.printJobs())
         for job in self.jobs:
             for i in range(len(job.operations)):
                 
                 schedule.append((job.id, i))
         return schedule
+    
+    def addOperationToMachine(self, operation, job_id):
+        # adds the operation to the given machine but must also add deadtime to the other machines
+        for machine in self.machines:
+            if machine == operation.machine:
+                machine.addOperation(operation, job_id)
+            else:
+                machine.addDeadTime(operation.time)
+
 
 
 
 class Calculator:
+    """Task 7.
+    """
     def __init__(self) -> None:
         pass
 
-    def totalOperationTime(self, problem):
+    def totalOperationTime(self, problem, schedule):
         """Task7. Calculate the total operation time of a schedule."""
-        schedule = problem.getSchedule()
+        # TODO: check if some of the machines can run at the same timne
         time = 0
+        # criterias: 
+        #   1: the same machine can only do one job at a time
+        #   2: the jobs must be completed in the given order
+
+        # create one list for every machine
+        # reset the operations list for the machines
+        for machine in problem.machines:
+            machine.operations=[]
+
 
         for job_id, operation in schedule:
             job = problem.getJob(job_id)
             operation = job.operations[operation]
-            time += operation.timespan
-        return time
+            # TODO: calculations 
+            # can the job start? -> does any of the machines contain the job_id
+            # find earliest start for given machine for the operation
+            earliest_start = len(operation.machine.operations)
+    
+            for machine in problem.machines:
+                start, stop = machine.getLastJob(job_id)
+
+                if stop == earliest_start:
+                    # does not need to consider the order of the jobs with this id
+                    if stop > 0:
+                        earliest_start = stop +1
+                elif stop > earliest_start:
+                    # must wait for machine to finish the job
+                    earliest_start = stop +1
+                    
+                    
+
+            # Add operation to machine
+            operation.machine.addOperation(operation, job_id, earliest_start)
+        # add deadtime to the machines so everyone "finishes at the same time"
+        total_time = 0
+        for machine in problem.machines:
+            if total_time < len(machine.operations):
+                total_time = len(machine.operations)
+        
+        for machine in problem.machines:
+            machine.addDeadTime(total_time - len(machine.operations))
+
+        return total_time
 
 
-    def allCandidateSchedules(self):
+    def allCandidateSchedules(self, problem):
         """
+        Task 8.
         Generate the list all candidate schedules.
         Calculate the makespan of a problem.
         """
         
-        pass
+        """
+        Goes through the problem and finds every possible schedule
+        [(1, 0), (1, 1), (1, 2), (2, 0), (2, 1), (3, 0), (3, 1), (3, 2)]
+        The important thing is that (1, 0) comes before (1,1) and so on
+        """
+
+        job_ids = problem.getJobs()
+        
+        # First create the straight forward schedule
+        # iterates through the jobs and returns a schedule of the different jobs
+        schedule = []
+        for job in problem.jobs:
+            for i in range(len(job.operations)):
+                schedule.append((job.id, i))
+
+        
+        all_schedules = list(permutations(schedule))
+        print('Length before removing: ', len(all_schedules))
+        possible_schedules = []
+        for i in range(len(all_schedules)):
+            s = all_schedules[i]
+            job_count = {id:-1 for id in job_ids}
+            possible = True
+            for job in s:
+                job_id = job[0]
+                nr = job[1]
+                if nr > job_count[job_id]:
+                    job_count[job_id] = nr
+                else:
+                    possible = False
+                    break
+            if possible:
+                possible_schedules.append(list(s))
+        
+        print('Length after removing: ', len(possible_schedules))
+        '''
+        for schedule in possible_schedules:
+            print(schedule)
+        '''
+        
+
+
+
+
+
+
+
+
 
 
 class Machine:
@@ -157,6 +211,7 @@ class Machine:
     def __init__(self, id) -> None:
         self.id = id
         self.operations = [] # the array with jobs for a set machine, when jobs are added, it will look like [(operation),(operation),,,,]
+        # Every element last 1 time unit
 
     def __str__(self) -> str:
         return 'Machine %s' % self.id
@@ -167,10 +222,38 @@ class Machine:
     def operations(self):
         return self.operations
     '''
+    def getLastJob(self, job_id):
+        # find the start index and end index of the last job with this id the machine performed
+        # return on format start, stop or 0,0 if it doesn't exist
+        start = 0
+        stop = 0
+        for i in range(len(self.operations)):
+            if self.operations[i] == job_id:
+                start = i
+                break
+        
+        for i in range(len(self.operations) -1, -1, -1):
+            if self.operations[i] == job_id:
+                stop = i
+                break
+        
+        return start, stop
+        
 
-    def addOperation(self, operation):
+
+    def addOperation(self, operation, job_id, start):
         # adds an operation to a machine
-        pass
+
+        # if start is later than current length of operations -> add deadtime to the machine
+        if start > len(self.operations):
+            self.addDeadTime(start - len(self.operations))
+
+        for i in range(operation.timespan):
+            self.operations.append(job_id)
+    
+    def addDeadTime(self, timespan):
+        for i in range(timespan):
+            self.operations.append(0)
 
 
 class Job:
@@ -218,4 +301,12 @@ class Operation:
 
 
 
-    
+class Printer:
+    """Task 5.
+    Venter litt med denne, til vi vet hva vi vil printe.
+
+    Design a printer for problems (and results), with methods to export problems into
+    files.
+    """
+    def __init__(self) -> None:
+        pass
