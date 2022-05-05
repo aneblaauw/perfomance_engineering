@@ -75,8 +75,9 @@ class Problem:
         schedule = []
         for job in self.jobs:
             for i in range(len(job.operations)):
-                
+        
                 schedule.append((job.id, i))
+        print(schedule)
         return schedule
     
     def addOperationToMachine(self, operation, job_id):

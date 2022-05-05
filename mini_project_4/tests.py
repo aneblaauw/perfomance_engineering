@@ -1,12 +1,7 @@
-from fileinput import filename
 import unittest
 
 from utils import createFromBenchmark
 from models import Problem, Calculator
-
-
-
-
 
 class Test(unittest.TestCase):
     @classmethod
@@ -47,7 +42,5 @@ class Test(unittest.TestCase):
 
     
     
-
-
 if __name__ == '__main__':
     unittest.main()
