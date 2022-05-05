@@ -1,4 +1,6 @@
-from utils import createSimpleSchedule, possibleSchedule
+from itertools import permutations
+import random
+from utils import createSimpleSchedule, possibleSchedule, swapPositions
 
 class Calculator:
     """
@@ -6,9 +8,9 @@ class Calculator:
     def __init__(self) -> None:
         pass
 
-    def totalOperationTime(self, problem, schedule):
+    def totalOperationTime(self, problem, schedule, case='AVERAGE'):
         """Task7. Calculate the total operation time of a schedule."""
-        # TODO: check if some of the machines can run at the same timne
+        # TODO: check if some of the machines can run at the same time
         time = 0
         # criterias:
         #   1: the same machine can only do one job at a time
@@ -42,7 +44,7 @@ class Calculator:
                     
 
             # Add operation to machine
-            operation.machine.addOperation(operation, job_id, earliest_start)
+            operation.machine.addOperation(operation, job_id, earliest_start, case=case)
         # add deadtime to the machines so everyone "finishes at the same time"
         total_time = 0
         for machine in problem.machines:
@@ -90,28 +92,101 @@ class Calculator:
         return possible_schedules
     
     def gradientDescendant(self, problem):
+        """Task 10 & 11"""
         # Step 1
         # create a random schedule
-
-        job_ids = problem.getJobs()
         
         # First create the straight forward schedule
-        # TODO: create random?
         # iterates through the jobs and returns a schedule of the different jobs
-        schedule = []
-        for job in problem.jobs:
-            for i in range(len(job.operations)):
-                schedule.append((job.id, i))
+        schedule = createSimpleSchedule(problem)
+        print(schedule)
         
-
+        random.shuffle(schedule)
+        count = 1
+        while not possibleSchedule(schedule, problem) and count < 15:
+            count += 1
+            random.shuffle(schedule)
+        
+        if not possibleSchedule(schedule, problem):
+            # just go with the simplest schedule
+            schedule = createSimpleSchedule(problem)
+        
+        archive = [schedule] # an archive for storing already checked options
         # Step 2
         # find the nearest neighbours to this schedule that works, and find the best solution among them
-        
+        makespan = self.totalOperationTime(problem, schedule)
+        better_option = schedule
+        optimal = False
 
-        # Step 3
-        # Repeat step 2 with the best soloution found
+        count = 0
+        while not optimal:
+            
+            optimal = True # assumes this solution is optimal
+            print('Best option so far: ', better_option)
+            print('Makespan: ', makespan)
+            for i in range(1, len(schedule)):
+                neighbour = swapPositions(schedule, i-1, i)
+                print('Schedule: ', schedule)
+                print('Neighbour: ', neighbour)
+                # check if this option has already been calculated
+                if neighbour not in archive:
+                    count += 1
+                    archive.append(neighbour)
+                    # check if this schedule is possible
+                    if possibleSchedule(neighbour, problem):
+                        print('Makespan for this neighbour: ', self.totalOperationTime(problem, neighbour) )
+                        if self.totalOperationTime(problem, neighbour) < makespan:
+                            # Then this is the better option
+                            better_option = neighbour
+                            makespan = self.totalOperationTime(problem, better_option)
+                            optimal = False # the last solution was not optimal
+                            
+                    else:
+                        print('Not a possible solution')
+                else:
+                    print('This solution has already been checked, skipping to next neighbour')
+            
+            schedule = better_option
+
+        print('\n!SUMMARY!')
+        print(problem)
+        print('\nBest option found: ')
+        problem.printSchedule(better_option, makespan)
+        print('Number of iterations: ', count)
+        return better_option
+    
+    def averageOperationTime(self, schedule, problem):
+        """Task 12. A stochastic simulation method to calculate 
+        mean value of total processing time of a schedule."""
         
-        # Step 4
-        # When to stop: If the makespan of the closest neighbours doesn't beat the best solution already found
-        
+        # to calculate the average, we will simply calculate the operation time for all three cases and find the average
+        max = self.totalOperationTime(problem, schedule, case='WORST')
+        avg = self.totalOperationTime(problem, schedule, case='AVERAGE')
+        min = self.totalOperationTime(problem, schedule, case='BEST')
+
+        print('Min: ', min)
+        print('Avg: ', avg)
+        print('Max: ', max)
+
+
+        return (min + avg + max) / 3
+    
+    def regression(self, problem):
+        """Task 16:
+        Select, by means of an experimental study, the best regression algorithm (implemented in sklearn).
+        Hint: Use a sufficiently large job shop scheduling problem so that the solution space
+        is vast enough to justify the approach.
+
+        Hva skal vi her??
+
+        Args:
+            problem (Problem): The problem to find the best solution for
+        """
+
+    
+
+    
+    
+
+
         

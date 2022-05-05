@@ -1,5 +1,8 @@
 
 
+from distutils.log import error
+
+
 class Machine:
     '''
     A machine is needed to do a job
@@ -39,16 +42,26 @@ class Machine:
         
 
 
-    def addOperation(self, operation, job_id, start):
+    def addOperation(self, operation, job_id, start, case='AVERAGE'):
+        if case not in ['WORST', 'BEST', 'AVERAGE']:
+            raise ValueError('%s is not a valid option for case' % case)
         # adds an operation to a machine
 
         # if start is later than current length of operations -> add deadtime to the machine
         if start > len(self.operations):
             self.addDeadTime(start - len(self.operations))
 
-        for i in range(operation.timespan):
+        if case == 'AVERAGE':
+            time = operation.timespan
+        elif case == 'BEST':
+            time = operation.best
+        else:
+            time = operation.worst
+
+        for i in range(time):
             self.operations.append(job_id)
     
     def addDeadTime(self, timespan):
         for i in range(timespan):
             self.operations.append(0)
+    

@@ -15,10 +15,13 @@ class Job:
     def __str__(self) -> str:
         return 'Job %s' % self.id
     
-    def printOperations(self):
+    def printOperations(self, uncertainty = False):
         op = '['
         for operation in self.operations:
-            s = '(%s,%s)' % (operation.machine.id, operation.timespan)
+            if uncertainty:
+                s = '(%s,(%s, %s, %s))' % (operation.machine.id, operation.best, operation.timespan, operation.worst)
+            else:
+                s = '(%s,%s)' % (operation.machine.id, operation.timespan)
             op += s
             op += ', '
         op += ']'

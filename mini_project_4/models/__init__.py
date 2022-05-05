@@ -1,6 +1,7 @@
-from .calculator import Calculator
-from .job import Job
-from .machine import Machine
-from .operation import Operation
-from .printer import Printer
-from .problem import Problem
+
+from .job import *
+from .machine import *
+from .operation import *
+from .printer import *
+from .problem import *
+from .calculator import *
