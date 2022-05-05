@@ -1,9 +1,10 @@
 import unittest
 
 from utils import createFromBenchmark
-from models import Problem, Calculator
+from .models import *
 
 class Test(unittest.TestCase):
+    
     @classmethod
     def setUpClass(self):
         filename = '/Users/ane/Projects/Performance Engineering/mini_project_4/benchmark_1.txt'
@@ -28,7 +29,11 @@ class Test(unittest.TestCase):
     
     def test_allSchedules(self):
         calc = Calculator()
-        calc.allCandidateSchedules(self.problem)
+        schedules = calc.allCandidateSchedules(self.problem)
+        self.assertEquals(560, len(schedules))
+        self.assertEqual(True, [(1, 0), (2, 0), (1, 1), (3, 0), (1, 2), (2, 1), (3, 1), (3, 2)] in schedules)
+        self.assertEquals(False, [(1, 0), (2, 0), (1, 1), (3, 1), (1, 2), (2, 1), (3, 0), (3, 2)] in schedules)
+        
     
     def test_makeSpan(self):
         schedule = [(1, 0), (2, 0), (1, 1), (3, 0), (1, 2), (2, 1), (3, 1), (3, 2)]
