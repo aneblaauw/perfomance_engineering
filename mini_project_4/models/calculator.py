@@ -3,8 +3,6 @@ import random
 from utils import createSimpleSchedule, possibleSchedule, swapPositions
 
 class Calculator:
-    """
-    """
     def __init__(self) -> None:
         pass
 
@@ -25,7 +23,6 @@ class Calculator:
         for job_id, operation in schedule:
             job = problem.getJob(job_id)
             operation = job.operations[operation]
-            # TODO: calculations 
             # can the job start? -> does any of the machines contain the job_id
             # find earliest start for given machine for the operation
             earliest_start = len(operation.machine.operations)
