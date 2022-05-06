@@ -21,7 +21,7 @@ for machine in problem.machines:
     print(s)
 
 
-#finding the best solution by checking all possible soloutions
+#finding the best solution by checking all possible solutions
 schedules = calc.allCandidateSchedules(problem)
 makespan = inf
 best = None
