@@ -3,6 +3,8 @@
 from cmath import inf
 from models import createFromBenchmark, Calculator
 
+
+#TODO: fix sys path
 filename = '/Users/ane/Projects/Performance Engineering/mini_project_4/benchmark_1.txt'
 problem = createFromBenchmark(filename)
 print('Problem:')
