@@ -3,8 +3,6 @@ import random
 
 
 def createSimpleSchedule(problem):
-    # First create the straight forward schedule
-    # iterates through the jobs and returns a schedule of the different jobs
     schedule = []
     for job in problem.jobs:
         for i in range(len(job.operations)):
@@ -13,7 +11,6 @@ def createSimpleSchedule(problem):
     return schedule
 
 def createBackwardsSchedule(problem):
-    # The same approach as simple schedule, but starting with the job with the highest id
     schedule = []
     for i in range(len(problem.jobs) -1, -1, -1):
         job = problem.jobs[i]
@@ -92,16 +89,14 @@ def translate_to_predict(schedule):
     return [job_id for job_id, index in schedule]
 
 def getAllSchedules(problem, set_size = 200):
-    # creates an array of many possible  schedules
+    # creates an array of many possible schedules
     schedules = []
     archive = []
-
     
     schedule1 = createSimpleSchedule(problem)
     new_schedules = createClosestNeighbours(schedule1, round(set_size/3), archive, problem)
 
     schedules = schedules + new_schedules
-
 
     schedule2 = createBackwardsSchedule(problem)
     new_schedules = createClosestNeighbours(schedule2, round(set_size/3), archive, problem)
@@ -117,22 +112,17 @@ def getAllSchedules(problem, set_size = 200):
 
 
 def getRandomSchedules(schedules, n):
-
     result = []
     for i in range(n):
         index = random.randint(0, len(schedules) -1)
         result.append(schedules.pop(index))
-    
     return result
-
-
-   
 
 
 def createClosestNeighbours(schedule, size, archive, problem):
     schedules = [schedule]
     archive.append(schedule)
-    while len(schedules) <size:
+    while len(schedules) < size:
         for i in range(1, len(schedule)):
             neighbour = swapPositions(schedule, i-1, i)
             if neighbour not in archive:

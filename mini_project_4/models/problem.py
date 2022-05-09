@@ -1,3 +1,5 @@
+import os
+import sys
 from models import Operation, Job, Machine
 
 class Problem:
@@ -89,15 +91,47 @@ class Problem:
         return schedule
     
     def addOperationToMachine(self, operation, job_id):
-        # adds the operation to the given machine but must also add deadtime to the other machines
         for machine in self.machines:
             if machine == operation.machine:
                 machine.addOperation(operation, job_id)
             else:
                 machine.addDeadTime(operation.time)
+    
+    def saveToFile(self, filename):
+        ''''
+        creates a benchmark for a problem and saves to file
+        3 (n_machines) 3 (n_jobs) 8 (total_operations)
+        3 (total operations) 3 (machine_id) 4(timespan) 2 2 1 1
+        2 1 3 3 3
+        3 2 2 1 4 3 1
+        '''
+        path = os.getcwd() + '/mini_project_4/benchmarks/' + filename
+
+        f = open(path, 'w')
+
+        n_machines = len(self.machines)
+        n_jobs = len(self.jobs)
+        total_operations = 0
+        for job in self.jobs:
+            total_operations += len(job.operations)
+        
+        f.write('%s %s %s \n' % (n_machines, n_jobs, total_operations))
+
+        for job in self.jobs:
+            total_operations = len(job.operations)
+            s = str(total_operations) + ' '
+            for operation in job.operations:
+                machine_id = operation.machine.id
+                timespan = operation.timespan
+                s += '%s %s ' % (machine_id, timespan)
+            s += '\n'
+
+            f.write(s)
+        
+        f.close()
+
 
 def createFromBenchmark(filename):
-    # TODO: fix filename path with sys.path eller noe
         try:
             with open(filename) as file:
                 # line 1 -> create needed jobs and machines
@@ -152,10 +186,8 @@ def createFromBenchmark(filename):
 
 def createFromUncertainBenchmark(filename):
         '''
-        Task 4.
         Reads from txt file and creates a problem
         '''
-        # TODO: fix filename path with sys.path eller noe
         try:
             with open(filename) as file:
                 # line 1 -> create needed jobs and machines
@@ -195,8 +227,6 @@ def createFromUncertainBenchmark(filename):
                         index3 = i*4 +3 # avg index
                         index4 = i*4 +4 # worst index
 
-                        print('Machine id: ', int(info[index1]))
-
                         machineid = int(info[index1])
                         best = int(info[index2])
                         timespan = int(info[index3])
@@ -210,3 +240,4 @@ def createFromUncertainBenchmark(filename):
                 
         except FileNotFoundError as fnf_error:
             print(fnf_error)
+    

@@ -10,7 +10,7 @@ class Test(unittest.TestCase):
     
     @classmethod
     def setUpClass(self):
-        filename = '/Users/ane/Projects/Performance Engineering/mini_project_4/benchmark_1.txt'
+        filename = '/Users/ane/Projects/Performance Engineering/mini_project_4/benchmarks/benchmark_1.txt'
         self.problem = createFromBenchmark(filename)
 
         #filename = '/Users/ane/Projects/Performance Engineering/mini_project_4/benchmark_3.txt'
@@ -24,7 +24,6 @@ class Test(unittest.TestCase):
     
     def test_schedules(self):
         # Testing creating different schedules
-
         mixed_schedule = createMixedSchedule(self.problem)
         self.assertEqual(mixed_schedule,[(1, 0), (2, 0), (3, 0), (1, 1), (2, 1), (1, 2), (3, 1), (3, 2)])
 
@@ -34,7 +33,7 @@ class Test(unittest.TestCase):
     def test_translate_to_predict(self):
         schedule = [(1, 0), (2, 0), (1, 1), (3, 0), (1, 2), (2, 1), (3, 1), (3, 2)]
         y = translate_to_predict(schedule)
-        print(y)
+        self.assertEqual(y, [1, 2, 1, 3, 1, 2, 3, 3])
     
     def test_getRandomSchedules(self):
         all_schedules = getAllSchedules(self.problem)
@@ -43,6 +42,11 @@ class Test(unittest.TestCase):
         self.assertEqual(3, len(schedules))
         for i in range(3):
             self.assertEqual(True, possibleSchedule(schedules[i], self.problem))
+    
+    def test_writeToFile(self):
+        filename = 'test.txt'
+
+        self.problem.saveToFile(filename)
 
     
     
