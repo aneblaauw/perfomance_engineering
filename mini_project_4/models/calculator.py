@@ -4,7 +4,6 @@ from utils import createSimpleSchedule, possibleSchedule, swapPositions, createB
 from math import inf
 
 class Calculator:
-
     def __init__(self) -> None:
         pass
 
